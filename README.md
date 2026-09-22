@@ -1,5 +1,7 @@
 # semif-vision
 
+![What it does](docs/hero.png)
+
 Porting the **semantic if** — a decision read straight from a model's
 answer-token logits, with no decoding loop — from text to **vision**, and
 measuring what the reported probability actually tells you.
@@ -25,7 +27,7 @@ meal already in progress?" — without training anything.
 absence, a false-premise question, an unanswerable question, and reading an
 Adidas mark spanning ~20×15 px. Option order never changed a winner.
 
-**The probability it reports is useless.** The softmax over 2–3 answer slots
+**The probability it reports is useless.** *(the bars in the figure above are the gap, not the probability)* The softmax over 2–3 answer slots
 gave **≥ 0.9993 on every single decision**, while the logit gap behind it spans
 7.3–26.4 nats and orders the decisions by real difficulty.
 **Threshold on the gap in nats, never on the probability.**
