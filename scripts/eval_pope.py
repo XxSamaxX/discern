@@ -18,7 +18,7 @@ import argparse, json, os, sys, time
 _R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_R, "src"))
 import torch
-import semif_vl
+from discern import _readout as semif_vl
 
 OPCIONES = [{"id": "yes", "description": "Yes, it is present in the image"},
             {"id": "no",  "description": "No, it is not present in the image"}]

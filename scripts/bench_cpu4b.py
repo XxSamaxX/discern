@@ -12,9 +12,10 @@ import argparse, json, os, resource, sys, time
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
+sys.path.insert(0, os.path.join(os.path.dirname(_HERE), "src"))
 
 import torch
-from semif_phase1.direct import score as text_score
+from discern._semif.direct import score as text_score
 from loaders import load_cpu
 import cascade
 

@@ -28,10 +28,9 @@ from __future__ import annotations
 import time
 
 import torch
-from semif_phase1.core import LETTERS
-
-import semif_vl
 from . import Verdict, _opciones, load  # noqa: F401
+from . import _readout as semif_vl
+from ._semif.core import LETTERS
 
 
 def _tokenizar(proc, fila):

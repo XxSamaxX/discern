@@ -7,8 +7,9 @@ criterio para decidir que se delega a un semantic if y que se queda en codigo.
 import json, os, statistics, sys
 _HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_HERE, "src"))
-import torch, semif_vl
-from semif_phase1.core import LETTERS
+import torch
+from discern import _readout as semif_vl
+from discern._semif.core import LETTERS
 
 # --- normativas: NO dependen de la imagen, solo de una politica institucional
 NORMATIVAS = [

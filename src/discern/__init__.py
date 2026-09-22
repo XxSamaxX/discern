@@ -20,14 +20,10 @@ winner on 11.7% of items, and those have a median gap of 2.7 nats.
 """
 from __future__ import annotations
 
-import os
-import sys
 import time
 from dataclasses import dataclass, field
 
-_HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if _HERE not in sys.path:
-    sys.path.insert(0, _HERE)
+__version__ = "0.1.0"
 
 __all__ = ["discern", "multi", "Verdict", "Uncertain", "load", "unload",
            "DEFAULT_THRESHOLD"]
@@ -44,7 +40,7 @@ def load(model: str | None = None):
     """Carga el modelo (perezoso y cacheado). Llamalo tu si quieres controlar
     cuando se paga el coste de carga; si no, la primera llamada lo hace."""
     global _MODELO
-    import semif_vl
+    from . import _readout as semif_vl
     nombre = model or semif_vl.DEFAULT_MODEL
     if _MODELO is None or _MODELO[2]["source"] != nombre:
         _MODELO = semif_vl.load_vl_model(nombre)
@@ -122,7 +118,7 @@ def discern(image, question: str, options=None, *,
     threshold nats por debajo de los cuales el veredicto se marca no fiable
     rotate    "auto" (rota solo si el gap queda corto), True (siempre), False
     """
-    import semif_vl
+    from . import _readout as semif_vl
     m, proc, meta = load(model)
     ops, binaria = _opciones(options)
     fila = {"id": "q", "image": image, "state": evidence,

@@ -1,6 +1,13 @@
 # discern
 
+[![PyPI](https://img.shields.io/pypi/v/discern-vl)](https://pypi.org/project/discern-vl/)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 ![What it does](docs/hero.png)
+
+```bash
+pip install discern-vl
+```
 
 Ask a vision model a question. Get the answer out of its logits in one forward
 pass — no decoding, nothing trained, no fixed label set.
@@ -138,15 +145,16 @@ Full write-up with method and statistics: [`paper/paper.pdf`](paper/paper.pdf).
 ## Layout
 
 ```
-src/discern/           the API: discern(image, question) -> Verdict
-src/semif_vl.py        vision port; readout identical to upstream, + gap/rotation calibration
-src/cascade.py         GPU predicates -> CPU policy, threaded pipeline
-src/bench_cpu4b.py     CPU thread sweep and policy benchmark
+src/discern/__init__.py       the API: discern(image, question) -> Verdict
+src/discern/_batch.py         multi(): several questions, one image
+src/discern/_readout.py       the vision port; readout identical to upstream
+src/discern/_semif/           vendored upstream engine (MIT)
+scripts/cascade.py            GPU predicates -> CPU policy, threaded pipeline
+scripts/bench_cpu4b.py        CPU thread sweep and policy benchmark
 scripts/eval_mmbench.py       MMBench harness (resumable JSONL)
 scripts/analiza_mmbench.py    accuracy, AUC, abstention curves
 scripts/eval_pope.py          POPE harness (9,000 binary questions)
 scripts/analiza_pope.py       F1, yes-rate, precision/recall by split
-src/semif_phase1/      vendored upstream engine (MIT)
 scripts/exp_gap_por_tipo.py   the perceptual-vs-normative experiment
 scripts/figuras.py     paper figures
 data/                  benchmark decisions + 4 COCO val2017 images
@@ -156,14 +164,17 @@ paper/                 LaTeX sources and compiled PDF
 
 ## Running it
 
-```bash
-uv venv --python 3.11 .venv
-uv pip install --python .venv/bin/python torch torchvision transformers \
-    accelerate safetensors huggingface-hub numpy pillow matplotlib
+The library is `pip install discern-vl`. To reproduce the measurements you want
+the repo and the benchmark extras:
 
-.venv/bin/python src/semif_vl.py --rows data/vl_rows_hard.json --calibrate
+```bash
+git clone https://github.com/XxSamaxX/discern && cd discern
+uv venv --python 3.11 .venv
+uv pip install --python .venv/bin/python -e ".[bench]"
+
+.venv/bin/python -m discern.\_readout --rows data/vl_rows_hard.json --calibrate
 .venv/bin/python scripts/exp_gap_por_tipo.py
-.venv/bin/python src/bench_cpu4b.py          # needs ~21 GiB RAM
+.venv/bin/python scripts/bench_cpu4b.py      # needs ~21 GiB RAM
 
 # MMBench: ~7 min vanilla, ~25 min CircularEval
 .venv/bin/python scripts/eval_mmbench.py

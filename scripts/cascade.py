@@ -26,11 +26,12 @@ import time
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.dirname(_HERE)
 sys.path.insert(0, _HERE)
+sys.path.insert(0, os.path.join(_ROOT, "src"))
 
 import torch
-from semif_phase1.direct import score as text_score
+from discern._semif.direct import score as text_score
 
-import semif_vl
+from discern import _readout as semif_vl
 from loaders import load_cpu
 
 

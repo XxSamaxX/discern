@@ -45,6 +45,11 @@ rotating options changes the winner on 11.7\% of items, and those items have a
 median gap of 2.7 nats against 22.8 for the stable ones, which bounds when
 order calibration is worth its $n$ forward passes.
 
+On POPE (9000 binary presence questions) the same readout scores 89.6\%, but
+the gap's AUC falls to 0.777 and the probability is $\geq 0.99$ on 86\% of the
+errors: the signal weakens as the option set shrinks, and a threshold tuned on
+four-way questions does not transfer to two-way ones.
+
 Two negative results survive the scale-up. First, difficulty is not
 epistemics: on 12 normative questions no model can ground, the gap
 distribution shifts (median 8.8 vs 20.9 nats, AUC 0.788, $p=0.006$) but
@@ -326,6 +331,56 @@ CircularEval, against a 25\% chance rate) and \texttt{image\_quality}
 item (8.1 nats) and its white-balance item (7.8). A confidence signal read off
 a handful of examples identified the categories that collapse at scale.
 
+\subsection{Binary questions: the signal weakens}
+\label{sec:pope}
+
+\begin{table}[t]
+\centering\small
+\caption{POPE, 9000 binary presence questions, 1500 yes and 1500 no per split.
+Recall is identical across splits because the positive half is shared; only the
+distractors change.}
+\label{tab:pope}
+\begin{tabular}{lrrrr}
+\toprule
+Split & Acc. & Prec. & Rec. & Yes-rate \\
+\midrule
+random      & 91.2\% & 98.2\% & 83.9\% & 42.7\% \\
+popular     & 89.3\% & 94.0\% & 83.9\% & 44.6\% \\
+adversarial & 88.3\% & 92.0\% & 83.9\% & 45.6\% \\
+\midrule
+all         & 89.6\% & 94.7\% & 83.9\% & 44.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+MMBench items carry four options. POPE \cite{li2023pope} carries two, which is
+the worst case for a readout that softmaxes over answer slots, and it probes
+exactly the family---object presence and absence---on which our hand-built
+probe was perfect.
+
+Accuracy is 89.6\% with an F1 of 89.0 (Table~\ref{tab:pope}), but the
+confidence signal degrades sharply. The gap separates correct from incorrect
+answers at AUC 0.777, against 0.894 on MMBench, and the reported probability is
+$\geq 0.99$ on 86\% of the errors rather than 52\%. The median gap when the
+model is wrong rises from 5.2 nats on MMBench to 16.4 here: with two slots the
+model is not merely wrong, it is confidently wrong. The practical consequence
+is that a threshold tuned on multi-way questions does not transfer to binary
+ones, and that a semantic if should be given three or more options wherever the
+decision admits them.
+
+Order sensitivity moves the other way, and consistently with our account of it:
+only 0.6\% of items change winner under rotation, against 11.7\% on MMBench,
+because binary gaps are large. Those that do flip have a median gap of 0.8
+nats, and the gap predicts stability at AUC 0.998.
+
+POPE also shows where object hallucination hides. Its headline metric, the
+yes-rate, is 42.7--45.6\%---\emph{below} the 50\% base rate---so on that metric
+the model looks clean, and our own prediction that it would over-assert
+presence was wrong. The effect is real but sits in precision: 98.2\% to 94.0\%
+to 92.0\% across the random, popular and adversarial splits, while recall stays
+at exactly 83.9\%. Co-occurring distractors do pull the model into false
+positives; an aggregate yes-rate averages that away.
+
 \subsection{Hybrid CPU--GPU execution}
 \label{sec:cascade}
 
@@ -359,6 +414,15 @@ $1.9\times$ faster than using 20 threads; scheduling work onto the efficiency
 cores actively hurts. Any measurement taken at the default thread count
 understates CPU inference on such parts, and our own first cascade measurements
 did.
+
+One optimisation that looks free is not. Questions about one image share a
+prefix---the system turn and roughly 300 visual tokens---so caching it and
+running only each question's tail should save most of the work. The cached path
+is numerically exact, reproducing every probability to the last bit, and it is
+13--14\% \emph{slower}, flat across images of 384, 852 and 1812 tokens with no
+crossover: it loses the fast attention kernel, which costs more than
+recomputing the prefix. Image preprocessing accounts for 3\% of the time and
+the forward for 97\%.
 
 The policy stage itself did not work, and the way it failed is instructive. Our
 first design asked one four-option question whose options were not mutually
@@ -416,8 +480,11 @@ confidence---it exceeded $0.9993$ on every decision we ran---while the logit
 gap behind it is a good within-family difficulty signal. That signal does not
 generalise across question families: it fails to separate perceptual questions
 from normative ones well enough to gate them, and the model is confidently
-wrong about policy. Use semantic ifs for perception, keep policy in code, and
-threshold on nats rather than on probabilities.
+wrong about policy. The signal is also not scale-free: halving the option set from four to two
+drops its AUC from 0.894 to 0.777 and leaves the model confidently wrong, so a
+threshold must be set per question shape rather than once. Use semantic ifs for
+perception, give them three or more options where the decision allows, keep
+policy in code, and threshold on nats rather than on probabilities.
 
 \section*{Code and data}
 

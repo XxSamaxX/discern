@@ -19,8 +19,8 @@ import argparse, json, os, sys, time
 _R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(_R, "src"))
 import torch
-import semif_vl
-from semif_phase1.core import LETTERS
+from discern import _readout as semif_vl
+from discern._semif.core import LETTERS
 
 NO_OPCION = ("", "nan", "none", "null")
 

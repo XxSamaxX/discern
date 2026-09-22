@@ -19,12 +19,12 @@ import sys
 import time
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_ROOT = os.path.dirname(_HERE)
-sys.path.insert(0, _HERE)
+_ROOT = os.path.dirname(os.path.dirname(_HERE))
 
 import torch
 import transformers
-from semif_phase1.core import DIRECT_SYSTEM, LETTERS, digest, softmax, validate_row
+
+from ._semif.core import DIRECT_SYSTEM, LETTERS, digest, softmax, validate_row
 
 PROMPT_VERSION = "direct-options-vl-v1"
 DEFAULT_MODEL = "Qwen/Qwen3-VL-4B-Instruct"

@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "discern-vl"
+version = "0.1.0"
+description = "Ask a vision model a question, get the answer from its logits in one forward pass"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "LICENSE.upstream"]
+authors = [{name = "Samuel Otero Agraso", email = "oteroagrasosamuel@gmail.com"}]
+keywords = ["vision-language-model", "zero-shot-classification", "logits",
+            "open-vocabulary", "llm-inference", "qwen"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+  "torch>=2.4",
+  "torchvision>=0.19",       # el procesador de video de Qwen3-VL lo exige
+  "transformers>=5.0",
+  "accelerate>=1.0",
+  "safetensors>=0.4",
+  "huggingface-hub>=0.26",
+  "numpy>=1.24",
+  "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+bench = ["datasets>=3.0", "matplotlib>=3.8"]
+
+[project.urls]
+Homepage = "https://github.com/XxSamaxX/discern"
+Paper = "https://github.com/XxSamaxX/discern/blob/main/paper/paper.pdf"
+Issues = "https://github.com/XxSamaxX/discern/issues"
+
+[project.scripts]
+discern = "discern.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["discern*"]
