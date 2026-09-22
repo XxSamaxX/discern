@@ -1,8 +1,8 @@
-# semif-vision
+# SIV — Semantic If Vision
 
 ![What it does](docs/hero.png)
 
-Porting the **semantic if** — a decision read straight from a model's
+**SIV** ports the **semantic if** — a decision read straight from a model's
 answer-token logits, with no decoding loop — from text to **vision**, and
 measuring what the reported probability actually tells you.
 

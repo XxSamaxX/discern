@@ -6,7 +6,7 @@ under the MIT licence — reproduced in [LICENSE.upstream](LICENSE.upstream).
 
 It is vendored rather than reimplemented on purpose: keeping the scoring path
 byte-identical is what makes the vision results in this repo comparable to the
-published text ones. Our additions (`src/semif_vl.py`, `src/cascade.py`,
+published text ones. SIV's additions (`src/semif_vl.py`, `src/cascade.py`,
 `src/bench_cpu4b.py`, `scripts/`) import that engine and do not modify it.
 
 The CPU loader shim that this work started from is **JEV-CPU** by Meanblock,
