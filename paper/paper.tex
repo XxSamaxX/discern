@@ -30,19 +30,22 @@ Recent open implementations read a decision directly from a language model's
 answer-token logits instead of decoding text, turning a model into a
 runtime-defined conditional---a \emph{semantic if}. We port this readout
 unchanged to a vision--language model and evaluate it on MMBench
-(en/dev, 4329 items) plus a small hand-built probe. Qwen3-VL-4B reaches
-87.4\% with one forward pass per item at 91\,ms, and 82.2\% under MMBench's
-CircularEval protocol, which rotates the answer options.
+(en/dev, 4329 items) and POPE (9000 items) with two models, Qwen3-VL-4B and
+-2B, plus a small hand-built probe. The 4B reaches 87.4\% with one forward pass
+per item at 91\,ms, and 82.2\% under MMBench's CircularEval protocol, which
+rotates the answer options.
 
 Our main results concern the confidence signal rather than the score. The
 probability these systems report and the logit gap behind it are not
 competing signals: the probability is a monotone transform of the gap, exactly
 so on binary questions, and the two predict correctness equally well (AUC 0.895
 against 0.894). The difference is representational and decisive in practice.
-Past $17.33$ nats the probability is no longer representable in float32,
-the dtype most inference pipelines carry, and on MMBench that covers 62\% of
-all items, where every probability is exactly 1.0; within that collapsed set
-the gap still separates correct from incorrect at AUC 0.736. Thresholding the
+Past $-\ln 2^{-25} = 17.33$ nats the probability is no longer representable in
+float32, the dtype most inference pipelines carry. The threshold is arithmetic;
+the fraction of decisions crossing it is not, and it grows with capability---62\%
+of MMBench items for the 4B against 26\% for the 2B, and 82\% against 42\% on
+POPE---so a better model loses more of its confidence signal to storage. Within
+the collapsed set the gap still separates correct from incorrect at AUC 0.736. Thresholding the
 gap gives a usable operating point---16 nats answers 66\% of items at 98.4\%
 accuracy against an 87.4\% base rate---and the same threshold expressed as a
 probability does not survive the dtype. The gap also predicts order sensitivity
@@ -56,6 +59,11 @@ the AUC of both forms of the signal falls to 0.777 and the median gap when the
 model is wrong rises from 5.2 to 16.4 nats: with two slots the model is not
 merely wrong but confidently wrong, and a threshold tuned on four-way questions
 does not transfer to two-way ones.
+
+Repeating the protocol on the 2B separates what the readout does from what the
+model does: the gap predicts correctness at AUC 0.896 against 0.894 and
+order-stability at 0.972 against 0.980, while accuracy, gap magnitude, flip
+rate and collapse fraction all move with the model.
 
 Two negative results survive the scale-up. First, difficulty is not
 epistemics: on 12 normative questions no model can ground, the gap
@@ -94,15 +102,19 @@ This paper reports what happens when it does transfer. Our contributions are:
 \item A port of the readout to a vision--language model in which the scoring
       path is byte-identical to the text implementation; only prompt
       construction and model loading differ (Section~\ref{sec:method}).
-\item An evaluation on MMBench en/dev: 87.4\% at 91\,ms per item, 82.2\% under
-      CircularEval (Section~\ref{sec:mmbench}), plus a 22-item adversarial
-      probe the model answers in full (Section~\ref{sec:accuracy}).
+\item An evaluation on 13,329 benchmark items with two models
+      (Sections~\ref{sec:mmbench}, \ref{sec:replication}, \ref{sec:pope}),
+      plus a 22-item adversarial probe answered in full
+      (Section~\ref{sec:accuracy}), which separates the properties of the
+      readout---all of which replicate---from those of the model, none of which
+      do.
 \item A correction to a claim that is easy to make and that we made
       ourselves: the reported probability and the logit gap are one signal, not
       two, and discriminate identically. What separates them is float32, in
-      which the probability collapses to exactly 1.0 on 62\% of items while the
-      gap still ranks them at AUC 0.736. Thresholding the gap supports
-      abstention at 98.4\% accuracy over 66\% of items
+      which the probability collapses to exactly 1.0 on 62\% of the 4B's items
+      while the gap still ranks them at AUC 0.736. The collapse grows with
+      model capability, so scaling makes it worse. Thresholding the gap
+      supports abstention at 98.4\% accuracy over 66\% of items
       (Sections~\ref{sec:saturation} and~\ref{sec:mmbench}).
 \item A characterisation of position bias: 1--2 nats in magnitude, flipping the
       winner on 11.7\% of items, with the gap predicting order-stability at
@@ -201,7 +213,9 @@ rotation is a clean estimate of position bias.
 
 All experiments run on one machine: an Intel i9-12900F (8 performance and 8
 efficiency cores) with 31\,GiB of RAM and an NVIDIA RTX 3080 with 12\,GiB.
-The vision model is Qwen3-VL-4B-Instruct in bfloat16 on the GPU. The text
+The vision models are Qwen3-VL-4B-Instruct and Qwen3-VL-2B-Instruct, in
+bfloat16 on the GPU and float32 on the CPU; bfloat16 on this CPU is emulated,
+as it lacks \texttt{avx512\_bf16} and \texttt{amx}, and is slower than float32. The text
 models are Qwen3-0.6B \cite{qwen3} and Qwen3.5-4B in float32 on the CPU; the
 latter is the model the upstream manifest \cite{semif} designates for this
 readout, and the CPU port substitutes the former.
@@ -254,12 +268,33 @@ The difference is representational, and in practice it is decisive
 (Figure~\ref{fig:signal}). The probability compresses the entire useful range
 into the last few digits before one: a gap of 12 nats is $p = 0.99999386$, 20
 nats is $p = 0.999999998$, and past
-$-\ln 2^{-25} = 17.33$ nats the value is no longer representable in float32, the dtype most inference pipelines carry. On MMBench
-that is \textbf{62\% of all items}, where every probability is exactly 1.0 and
-the ranking is gone; in float16, whose collapse threshold is only 8.32 nats, it is 81\%. Within that collapsed set the gap
-still separates correct from incorrect answers at AUC 0.736, and in the float16
-set at 0.867. That is information the readout computed and the representation
-threw away.
+$-\ln 2^{-25} = 17.33$ nats the value is no longer representable in float32, the dtype most inference pipelines carry. The threshold is a property of the
+arithmetic, not of the model; the fraction of decisions that crosses it is a
+property of the model. For Qwen3-VL-4B on MMBench it is \textbf{62\% of all
+items}, where every probability is exactly 1.0 and the ranking is gone, rising
+to 82\% on POPE's binary questions; in float16, whose threshold is only 8.32
+nats, it is 81\%. Within the collapsed set the gap still separates correct from
+incorrect at AUC 0.736. That is information the readout computed and the
+representation threw away.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/scale.pdf}
+\caption{Fraction of MMBench decisions at or above a given gap, for both
+models. The better model's curve lies above the weaker one's everywhere, so
+more of its decisions fall past the float32 floor: 62\% against 26\%. The
+percentages are measured float32 collapse rather than the count above 17.33
+nats, which differs slightly because with three or four options the softmax
+depends on all the logits and not only the top two.}
+\label{fig:scale}
+\end{figure}
+
+The dependence runs the wrong way for anyone hoping to solve this by scaling.
+A better model is more often confident, so more of its decisions land past the
+threshold: Qwen3-VL-2B, four points weaker, collapses on 26\% of MMBench items
+against the 4B's 62\%, and 42\% against 82\% on POPE
+(Figure~\ref{fig:scale}, Section~\ref{sec:replication}). The problem grows with
+capability.
 
 The practical recommendation therefore survives, for a narrower reason than we
 first believed: compute, log and threshold the gap in nats. Not because it
@@ -381,6 +416,65 @@ CircularEval, against a 25\% chance rate) and \texttt{image\_quality}
 item (8.1 nats) and its white-balance item (7.8). A confidence signal read off
 a handful of examples identified the categories that collapse at scale.
 
+\subsection{Replication across model scale}
+\label{sec:replication}
+
+\begin{table}[t]
+\centering\small
+\caption{The same protocol on Qwen3-VL-4B and Qwen3-VL-2B, 4329 MMBench and
+9000 POPE items each. The upper block is what the readout does; the lower block
+is what the model does.}
+\label{tab:replication}
+\begin{tabular}{lrr}
+\toprule
+ & 4B & 2B \\
+\midrule
+\multicolumn{3}{l}{\emph{properties of the readout}} \\
+AUC gap $\rightarrow$ correct, MMBench & 0.894 & 0.896 \\
+AUC gap $\rightarrow$ correct, POPE    & 0.777 & 0.808 \\
+AUC gap $\rightarrow$ order-stable     & 0.980 & 0.972 \\
+flips below 3 nats                     & 85\% & 76\% \\
+flips at or above 3 nats               & 5.3\% & 4.1\% \\
+\midrule
+\multicolumn{3}{l}{\emph{properties of the model}} \\
+MMBench, VanillaEval                   & 87.4\% & 83.3\% \\
+MMBench, CircularEval                  & 82.2\% & 76.2\% \\
+POPE                                   & 89.6\% & 89.8\% \\
+median gap when correct                & 22.4 & 14.8 \\
+float32 collapse, MMBench              & 62\% & 26\% \\
+float32 collapse, POPE                 & 82\% & 42\% \\
+winner flips under rotation            & 11.7\% & 16.6\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A single model cannot tell a property of the method from a property of that
+model. We therefore repeated the whole protocol on Qwen3-VL-2B, which is half
+the size and four points weaker (Table~\ref{tab:replication}).
+
+Everything we claim about the confidence signal replicates. The gap predicts
+correctness at AUC 0.896 against the 4B's 0.894, order-stability at 0.972
+against 0.980, and correctness on POPE at 0.808 against 0.777. The 3-nat rule
+transfers unchanged: below it 85\% and 76\% of winners flip under rotation,
+above it 5.3\% and 4.1\%. None of this depends on the model being good---the
+2B's answers are worse and its confidence signal is just as informative.
+
+Everything about magnitude does not. The 2B's gaps are smaller throughout
+(median 14.8 nats when correct against 22.4), which has two consequences that
+pull in opposite directions. It flips more often under rotation, 16.6\% against
+11.7\%, because a 1--2 nat position bias decides more of its decisions. And it
+collapses far less under float32, 26\% against 62\%, because fewer of its gaps
+reach 17.33 nats. Abstention is correspondingly cheaper for the 4B: a 16-nat
+threshold answers 66\% of items at 98.4\% accuracy, where the 2B answers 37\%
+at 99.6\%.
+
+The POPE comparison is the one place the smaller model wins outright, 89.8\%
+against 89.6\%, and it wins by failing differently rather than less. Its recall
+is higher (88.8\% against 83.9\%) and its precision lower, and on the
+adversarial split its yes-rate reaches 51.7\%, above the 50\% base rate, which
+is the classic object-hallucination signature the 4B never shows. Aggregate
+accuracy hides that the two models are wrong in opposite directions.
+
 \subsection{Binary questions: the signal weakens}
 \label{sec:pope}
 
@@ -430,6 +524,40 @@ presence was wrong. The effect is real but sits in precision: 98.2\% to 94.0\%
 to 92.0\% across the random, popular and adversarial splits, while recall stays
 at exactly 83.9\%. Co-occurring distractors do pull the model into false
 positives; an aggregate yes-rate averages that away.
+
+\subsection{Running without a GPU}
+\label{sec:cpu}
+
+\begin{table}[t]
+\centering\small
+\caption{One decision on a $640\times480$ photograph, float32 on CPU, best of a
+thread sweep. The CPU/GPU factor worsens with model size.}
+\label{tab:cpu}
+\begin{tabular}{lrrrr}
+\toprule
+Model & GPU & CPU (8 thr.) & factor & RAM \\
+\midrule
+Qwen3-VL-2B & 56\,ms & 2458\,ms & $\times 44$ & 12.7\,GiB \\
+Qwen3-VL-4B & 91\,ms & 5707\,ms & $\times 63$ & 21.5\,GiB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Nothing in the readout needs a GPU, and a CPU path widens who can use it, so we
+measured the price (Table~\ref{tab:cpu}). It is roughly fifty times slower,
+which rules out interactive use and leaves batch work---filtering an archive,
+flagging what needs human review---intact.
+
+Two results make the smaller model the right default on CPU rather than a
+compromise. The CPU/GPU factor worsens with size, $\times 44$ for the 2B
+against $\times 63$ for the 4B, so the 4B is relatively worse off the GPU than
+on it; and it needs 21.5\,GiB of resident memory against 12.7, which excludes
+machines the 2B runs on. Together with its smaller float32 collapse
+(Section~\ref{sec:replication}), the 2B is faster, lighter and loses less
+signal, for 4.1 points of MMBench accuracy and none on POPE.
+
+Cost is superlinear in visual tokens---1762\,ms at 224 tokens, 3264 at 384 and
+8911 at 852---so reducing input resolution is the available lever on CPU.
 
 \subsection{Hybrid CPU--GPU execution}
 \label{sec:cascade}
@@ -509,9 +637,12 @@ reason, and composing several binary ifs in a host language is both more
 accurate and more debuggable than asking one model to resolve a multi-way
 policy.
 
-\paragraph{Limitations.} One model, one prompt template, one language, a
-single machine and a single run, without repetition or confidence intervals on
-latency. MMBench dev is public and may appear in the model's training data, so
+\paragraph{Limitations.} Two models from one family, one prompt template, one
+language, a single machine and a single run, without repetition or confidence
+intervals on latency. Replication within a family is weaker evidence than
+replication across architectures, and the two models share tokenizer, training
+data and answer-token layout, so the agreement we report on the readout's
+properties could still be a property of Qwen3-VL rather than of the readout. MMBench dev is public and may appear in the model's training data, so
 87.4\% is not evidence about generalisation; the claims we defend are about the
 confidence signal, which is measured within the same run and does not depend on
 the absolute score. Our hand-built probe is small and author-annotated, one of
@@ -538,7 +669,9 @@ generalise across question families: it fails to separate perceptual questions
 from normative ones well enough to gate them, and the model is confidently
 wrong about policy. The signal is also not scale-free: halving the option set from four to two
 drops its AUC from 0.894 to 0.777 and leaves the model confidently wrong, so a
-threshold must be set per question shape rather than once. Use semantic ifs for
+threshold must be set per question shape rather than once. Halving the model
+instead leaves the signal's quality untouched and changes only its magnitude,
+which is the sense in which these are properties of the readout. Use semantic ifs for
 perception, give them three or more options where the decision allows, keep
 policy in code, and threshold on nats rather than on probabilities.
 

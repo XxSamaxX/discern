@@ -174,5 +174,34 @@ recesivo(ax, eje="x")
 fig.savefig(os.path.join(OUT, "families.pdf"), bbox_inches="tight", pad_inches=0.02)
 plt.close(fig)
 
+# ==================================================== fig 5 (1 col)
+# El modelo mejor pierde MAS informacion por float32, porque esta mas seguro.
+fig, ax = plt.subplots(figsize=(3.4, 2.3))
+for etiqueta, slug, color, estilo in (("Qwen3-VL-4B", "qwen3-vl-4b-instruct", AZUL, "-"),
+                                      ("Qwen3-VL-2B", "qwen3-vl-2b-instruct", NARANJA, "--")):
+    R = carga(f"mmbench_{slug}_vanilla_4329.jsonl")
+    g = np.sort([r["gap_nats"] for r in R])
+    # fraccion de items con gap >= x
+    ax.plot(g, 1 - np.arange(len(g)) / len(g), estilo, color=color, linewidth=1.7,
+            label=etiqueta)
+    # el porcentaje es el colapso REAL en float32, no "items con gap>=17.33":
+    # con 3-4 opciones la softmax depende de todos los logits, no solo del top-2,
+    # asi que los dos criterios no coinciden exactamente
+    frac = sum(1 for r in R if np.float32(r["p_ganador"]) == np.float32(1.0)) / len(R) * 100
+    ax.plot([FLOAT32_NATS], [frac / 100], "o", color=color, markersize=5,
+            markeredgecolor="white", markeredgewidth=0.7, zorder=5)
+    ax.annotate(f"{frac:.0f}%", xy=(FLOAT32_NATS - 0.9, frac / 100),
+                ha="right", va="center", fontsize=7.5, color=color, weight="bold")
+ax.axvline(FLOAT32_NATS, color=TINTA2, linewidth=0.9, linestyle=(0, (4, 2)))
+ax.annotate("float32 floor\n17.33 nats", xy=(FLOAT32_NATS + 0.8, 0.88),
+            fontsize=6.8, color=TINTA2, va="top")
+ax.set_xlabel("logit gap (nats)")
+ax.set_ylabel("fraction of items at or above")
+ax.set_xlim(0, 31); ax.set_ylim(0, 1.02)
+ax.legend(loc="lower left")
+recesivo(ax)
+fig.savefig(os.path.join(OUT, "scale.pdf"), bbox_inches="tight", pad_inches=0.02)
+plt.close(fig)
+
 print("figuras:", sorted(f for f in os.listdir(OUT) if f.endswith(".pdf")))
 print(f"float32 colapsa en {pct:.1f}% de MMBench")

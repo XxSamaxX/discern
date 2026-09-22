@@ -1,0 +1,19 @@
+REPLICA (propiedad del metodo)
+  AUC gap->acierto MMBench     4B   0.894   2B   0.896
+  AUC gap->estabilidad         4B   0.980   2B   0.972
+  AUC gap->acierto POPE        4B   0.777   2B   0.808
+  flips con gap<3n (%)         4B  85.057   2B  75.529
+  flips con gap>=3n (%)        4B   5.300   2B   4.142
+
+ESCALA CON EL MODELO
+  MMBench vanilla (%)          4B    87.4   2B    83.3
+  MMBench circular (%)         4B    82.2   2B    76.2
+  POPE (%)                     4B    89.6   2B    89.8
+  gap mediano al acertar       4B    22.4   2B    14.8
+  gap mediano al fallar        4B     5.2   2B     2.1
+  colapso f32 MMBench (%)      4B    62.1   2B    26.0
+  colapso f32 POPE (%)         4B    81.7   2B    41.8
+  flips (%)                    4B    11.7   2B    16.6
+  AUC dentro del colapso       4B     0.7   2B     0.9
+  cobertura a 16n (%)          4B    66.2   2B    36.7
+  acierto a 16n (%)            4B    98.4   2B    99.6
