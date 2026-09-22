@@ -27,11 +27,28 @@ A predicate a detector cannot express — *"is this photo posed?"*, *"is the
 white balance wrong?"*, *"is the meal already in progress?"* — costs one
 prefill and about 90 ms.
 
-**The confidence you get back is the logit gap in nats, not a probability.**
-That is the whole point of this repo, and it is measured, not asserted: over
-4,329 MMBench items the softmax probability was ≥ 0.99 on **52% of the model's
-own errors**, while the gap predicts correctness with **AUC 0.894**. So
-`discern` refuses to be used as a condition when the gap is too small:
+**The confidence you get back is the logit gap in nats, not a probability** —
+and the reason is not the one you would guess. The probability these systems
+report is a *monotone transform of the gap*: on binary questions it is exactly
+`p = sigmoid(gap)`, and both predict correctness equally well (AUC 0.895 vs
+0.894 over 4,329 MMBench items). They are one signal.
+
+What separates them is **float32**, the dtype your pipeline almost certainly
+uses. Past **17.33 nats** — exactly `-ln(2**-25)` — the probability is no longer
+representable in it:
+
+| logit gap | probability | float32 |
+|---|---|---|
+| 12 nats | 0.99999386 | 0.99999386 |
+| 20 nats | 0.999999998 | **exactly 1.0** |
+| 25 nats | 0.99999999999 | **exactly 1.0** |
+
+That is **62% of MMBench items** collapsed onto one value. In float16 the
+threshold falls to 8.32 nats and it is 81%.
+Within that collapsed set the gap still separates right from wrong at AUC
+0.736. Same information, one scale that survives being stored.
+
+So `discern` refuses to be used as a condition when the gap is too small:
 
 ```python
 v = discern("blurry.jpg", "is the person wearing a helmet?")
@@ -70,13 +87,15 @@ under MMBench's own CircularEval protocol. On our own 22-item probe it answers
 22/22, including counting, absence, a false-premise question, an unanswerable
 question, and reading an Adidas mark spanning ~20×15 px.
 
-**The probability it reports is dangerous; the gap is not.** *(the bars in the
-figure above are the gap, not the probability)* Over 4,329 MMBench items the
-softmax reports **p ≥ 0.99 on 52% of the model's own errors** — it claims
-certainty on more than half of what it gets wrong. The logit gap behind that
-same number **predicts correctness with AUC 0.894** (median 22.4 nats when
-right, 5.2 when wrong). **Threshold on the gap in nats, never on the
-probability.** It buys a real operating point:
+**The probability and the gap are the same signal; only one survives float32.**
+*(the bars in the figure above are the gap)* We expected the gap to
+out-predict the reported probability. It does not — both reach AUC ~0.894 on
+MMBench, and requiring `p >= 0.99` retains 286 of 547 errors while its exact
+equivalent, `gap >= 4.60 nats`, retains 288. The real difference is that 62% of
+items share the single float32 value 1.0, where the gap still ranks them at AUC
+0.736. **Threshold in nats**, not because it discriminates better but because
+it is the only one you can still read afterwards. It buys a real operating
+point:
 
 | gap threshold | you answer | accuracy |
 |---|---|---|
@@ -107,8 +126,8 @@ composed in Python fixed it.
 
 **The gap signal weakens as options shrink.** On POPE (9,000 binary
 yes/no questions about object presence) the same readout scores **89.6%**
-(F1 89.0), but the gap only reaches **AUC 0.777** against MMBench's 0.894, and
-the softmax is ≥ 0.99 on **86% of the errors** rather than 52%. With two slots
+(F1 89.0), but the gap only reaches **AUC 0.777** against MMBench's 0.894 (and so does the
+probability — they stay equivalent). With two slots
 the model is *confidently* wrong: its median gap when wrong is 16.4 nats, against
 5.2 on MMBench. **Ask three or more options where you can**, and demand a much
 higher threshold on binary questions.

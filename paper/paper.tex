@@ -35,20 +35,27 @@ unchanged to a vision--language model and evaluate it on MMBench
 CircularEval protocol, which rotates the answer options.
 
 Our main results concern the confidence signal rather than the score. The
-softmax over answer slots, which these systems report as a probability, is
-$\geq 0.99$ on 52\% of the model's own errors: it claims near-certainty on more
-than half of what it gets wrong. The logit gap behind that same number predicts
-correctness with AUC 0.894 and supports a usable operating point---thresholding
-at 16 nats answers 66\% of items at 98.4\% accuracy, against an 87.4\% base
-rate. The gap also predicts order sensitivity almost perfectly (AUC 0.980):
+probability these systems report and the logit gap behind it are not
+competing signals: the probability is a monotone transform of the gap, exactly
+so on binary questions, and the two predict correctness equally well (AUC 0.895
+against 0.894). The difference is representational and decisive in practice.
+Past $17.33$ nats the probability is no longer representable in float32,
+the dtype most inference pipelines carry, and on MMBench that covers 62\% of
+all items, where every probability is exactly 1.0; within that collapsed set
+the gap still separates correct from incorrect at AUC 0.736. Thresholding the
+gap gives a usable operating point---16 nats answers 66\% of items at 98.4\%
+accuracy against an 87.4\% base rate---and the same threshold expressed as a
+probability does not survive the dtype. The gap also predicts order sensitivity
+almost perfectly (AUC 0.980):
 rotating options changes the winner on 11.7\% of items, and those items have a
 median gap of 2.7 nats against 22.8 for the stable ones, which bounds when
 order calibration is worth its $n$ forward passes.
 
 On POPE (9000 binary presence questions) the same readout scores 89.6\%, but
-the gap's AUC falls to 0.777 and the probability is $\geq 0.99$ on 86\% of the
-errors: the signal weakens as the option set shrinks, and a threshold tuned on
-four-way questions does not transfer to two-way ones.
+the AUC of both forms of the signal falls to 0.777 and the median gap when the
+model is wrong rises from 5.2 to 16.4 nats: with two slots the model is not
+merely wrong but confidently wrong, and a threshold tuned on four-way questions
+does not transfer to two-way ones.
 
 Two negative results survive the scale-up. First, difficulty is not
 epistemics: on 12 normative questions no model can ground, the gap
@@ -90,11 +97,13 @@ This paper reports what happens when it does transfer. Our contributions are:
 \item An evaluation on MMBench en/dev: 87.4\% at 91\,ms per item, 82.2\% under
       CircularEval (Section~\ref{sec:mmbench}), plus a 22-item adversarial
       probe the model answers in full (Section~\ref{sec:accuracy}).
-\item The reported probability is not merely miscalibrated but actively
-      misleading: it exceeds 0.99 on 52\% of the model's errors. The logit gap
-      behind it predicts correctness with AUC 0.894 and supports abstention at
-      98.4\% accuracy over 66\% of items (Sections~\ref{sec:saturation}
-      and~\ref{sec:mmbench}).
+\item A correction to a claim that is easy to make and that we made
+      ourselves: the reported probability and the logit gap are one signal, not
+      two, and discriminate identically. What separates them is float32, in
+      which the probability collapses to exactly 1.0 on 62\% of items while the
+      gap still ranks them at AUC 0.736. Thresholding the gap supports
+      abstention at 98.4\% accuracy over 66\% of items
+      (Sections~\ref{sec:saturation} and~\ref{sec:mmbench}).
 \item A characterisation of position bias: 1--2 nats in magnitude, flipping the
       winner on 11.7\% of items, with the gap predicting order-stability at
       AUC 0.980. This bounds when order calibration earns its $n$ forward
@@ -126,8 +135,10 @@ calibration \cite{zhao2021calibrate} is the standard remedy; we measure the
 bias in nats and find it an order of magnitude smaller than the decision
 margins on perceptual items, which bounds when that remedy is worth its cost.
 Separately, modern networks are known to be poorly calibrated
-\cite{guo2017calibration}; we show a sharper failure specific to this readout,
-where the reported probability is not merely miscalibrated but constant.
+\cite{guo2017calibration}; the failure we document is not one of calibration at
+all, but of numeric range---the reported probability orders items exactly as
+well as the logits beneath it, and loses that order only when stored at the
+precision these pipelines use.
 Finally, object hallucination benchmarks such as POPE \cite{li2023pope}
 establish that vision--language models assert the presence of absent objects;
 our false-premise and absence items probe the same behaviour and, notably, do
@@ -211,35 +222,52 @@ spatial relation (8.1 nats), which are the two items we judged hardest a
 priori. Throughput is 110--140\,ms per decision at 8.4\,GiB of VRAM, after a
 first forward pass of 11.2\,s attributable to CUDA warm-up.
 
-\subsection{The reported probability is constant}
+\subsection{The probability and the gap are one signal in two scales}
 \label{sec:saturation}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/saturation.pdf}
-\caption{The same 22 decisions and the same forward passes, read two ways.
-Top: the softmax probability of the winning option is indistinguishable from
-1.0 everywhere. Bottom: the logit gap behind those probabilities spans
-7.3--26.4 nats and orders the decisions by difficulty.}
-\label{fig:saturation}
-\end{figure}
+\includegraphics[width=\textwidth]{figures/signal.pdf}
+\caption{4329 MMBench items. \textbf{(a)} The reported probability is a
+monotone transform of the logit gap---the relation is a line, and on binary
+questions it is exactly $p=\sigma(\text{gap})$ with zero inversions in 8999
+POPE items. The shaded band is where $1-p$ falls below float32 resolution and
+the probability becomes exactly 1.0. \textbf{(b)} Gap distributions for correct
+and incorrect answers. 62\% of items sit right of the dashed line, where a
+float32 probability can no longer tell them apart and the gap still can.}
+\label{fig:signal}
+\end{figure*}
 
-Every one of the 22 decisions reports a winning-option probability of at least
-$0.9993$ (Figure~\ref{fig:saturation}, top). Taken at face value the system is
-certain about all of them, and no threshold on that number can separate the
-item it found hardest from the item it found easiest. On MMBench the
-saturation is severe but not total---the minimum is 0.325 and 88\% of items
-exceed 0.99---so this figure overstates the effect; what survives at scale is
-the consequence, that the probability is $\geq 0.99$ on 52\% of the model's
-errors (Section~\ref{sec:mmbench}). The information is not
-absent from the model; it is destroyed by the readout. A softmax over two or
-three slots maps any gap beyond roughly 7 nats to a probability that rounds to
-one. The gaps themselves (Figure~\ref{fig:saturation}, bottom) are well spread
-and monotone in our a priori difficulty ordering. The upstream implementation
+It is tempting to say that these systems report a useless probability and that
+the logit gap is the real signal. We tested that and it is false. The softmax
+over the answer slots is a monotone transform of the gap: on POPE's binary
+questions it is exactly $p = \sigma(\text{gap})$, with zero monotonicity
+inversions across 8999 items, and on MMBench's three- and four-way questions
+only 4.5\% of adjacent pairs invert. As ranking signals they are the same
+quantity. Their AUCs for predicting correctness agree to the third decimal:
+0.895 for the probability against 0.894 for the gap on MMBench, and 0.777 for
+both on POPE. A threshold on one is a threshold on the other---requiring
+$p \geq 0.99$ retains 286 of 547 MMBench errors, and requiring a gap of 4.60
+nats, its exact equivalent, retains 288.
+
+The difference is representational, and in practice it is decisive
+(Figure~\ref{fig:signal}). The probability compresses the entire useful range
+into the last few digits before one: a gap of 12 nats is $p = 0.99999386$, 20
+nats is $p = 0.999999998$, and past
+$-\ln 2^{-25} = 17.33$ nats the value is no longer representable in float32, the dtype most inference pipelines carry. On MMBench
+that is \textbf{62\% of all items}, where every probability is exactly 1.0 and
+the ranking is gone; in float16, whose collapse threshold is only 8.32 nats, it is 81\%. Within that collapsed set the gap
+still separates correct from incorrect answers at AUC 0.736, and in the float16
+set at 0.867. That is information the readout computed and the representation
+threw away.
+
+The practical recommendation therefore survives, for a narrower reason than we
+first believed: compute, log and threshold the gap in nats. Not because it
+discriminates better---it does not---but because it is the only one of the two
+that survives contact with a float32 pipeline. The upstream implementation
 labels its output \emph{``conditional option score; uncalibrated as decision
-confidence''}, which is correct but understates the problem: the quantity is
-not a weak confidence signal, it is very nearly a constant. Practitioners who
-need a threshold should apply it to the gap in nats.
+confidence''}, which is correct; we would add that the number is also the wrong
+scale on which to store it.
 
 \subsection{Order sensitivity is small}
 \label{sec:order}
@@ -309,18 +337,40 @@ Our own benchmark returned 22/22, so it could not measure whether the gap
 \emph{predicts} anything---there were no errors to predict. MMBench supplies
 547 of them under VanillaEval.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/abstention.pdf}
+\caption{Refusing to answer below a gap threshold. The leftmost marker on each
+curve is the no-abstention operating point; moving right trades coverage for
+accuracy. MMBench gains far more than POPE, whose binary questions leave the
+model confidently wrong.}
+\label{fig:abstention}
+\end{figure}
+
 The gap separates correct from incorrect answers with AUC 0.894 ($z=29.9$),
 with a median of 22.4 nats when the model is right against 5.2 when it is
 wrong. Thresholding on it yields a genuine abstention policy: at 12 nats the
 system answers 75\% of items at 96.8\% accuracy, and at 16 nats 66\% at 98.4\%,
-against an 87.4\% base rate. The reported probability supports nothing
-comparable---it is at least 0.99 on 88\% of all items and, more to the point,
-on 52\% of the errors.
+against an 87.4\% base rate (Figure~\ref{fig:abstention}). The same threshold expressed as a probability
+selects the same items (Section~\ref{sec:saturation}); what it does not do is
+survive being stored, since 62\% of these items share the single float32 value
+1.0.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/order.pdf}
+\caption{Where option order decides the answer. Boxes span the interquartile
+range, whiskers the 5th--95th percentiles. Items whose winner flips under
+rotation sit at gaps an order of magnitude below the stable ones, on both
+benchmarks.}
+\label{fig:order}
+\end{figure}
 
 CircularEval costs 5.2 points (87.4\% to 82.2\%) because the winner changes
 under rotation on 507 of 4329 items, 11.7\%. Those items are not randomly
 distributed: their median gap is 2.7 nats against 22.8 for the order-stable
-ones, and the gap predicts stability with AUC 0.980. The rule we proposed in
+ones, and the gap predicts stability with AUC 0.980 (Figure~\ref{fig:order}).
+The rule we proposed in
 Section~\ref{sec:order} from a 22-item probe---rotate only below roughly 3
 nats---was written before this dataset was downloaded and lands on the
 empirical median of the items that actually flip.
@@ -360,9 +410,9 @@ probe was perfect.
 
 Accuracy is 89.6\% with an F1 of 89.0 (Table~\ref{tab:pope}), but the
 confidence signal degrades sharply. The gap separates correct from incorrect
-answers at AUC 0.777, against 0.894 on MMBench, and the reported probability is
-$\geq 0.99$ on 86\% of the errors rather than 52\%. The median gap when the
-model is wrong rises from 5.2 nats on MMBench to 16.4 here: with two slots the
+answers at AUC 0.777, against 0.894 on MMBench, and so, being its monotone
+image, does the reported probability. The median gap when the model is wrong
+rises from 5.2 nats on MMBench to 16.4 here: with two slots the
 model is not merely wrong, it is confidently wrong. The practical consequence
 is that a threshold tuned on multi-way questions does not transfer to binary
 ones, and that a semantic if should be given three or more options wherever the
@@ -441,10 +491,12 @@ stage, which removes the reason to split the work in the first place.
 The perceptual result is strong and the systems result is modest; the two
 negative results are what we would want a practitioner to take away.
 
-The first is a readout defect with a one-line fix. Reporting a softmax over
-two or three answer slots produces a number that is always approximately one,
-and pipelines that threshold on it are thresholding on noise. The gap in nats
-is already computed and should be reported instead.
+The first is not a defect of the readout but of the number it hands back. The
+probability and the gap carry identical information, so nothing is lost in
+principle; what is lost is precision, and only once the value meets a float32
+array. Sixty-two percent of MMBench items land where that array cannot hold the
+distinction, and the gap that produced them still can. The fix is one line and
+costs nothing: report the difference of the two logits, not its softmax.
 
 The second is harder to fix and easier to get wrong in production. A semantic
 if will answer a question about your organisation's consent policy with the
@@ -464,9 +516,12 @@ latency. MMBench dev is public and may appear in the model's training data, so
 confidence signal, which is measured within the same run and does not depend on
 the absolute score. Our hand-built probe is small and author-annotated, one of
 its labels was demonstrably wrong before correction, and its 22/22 misled us
-about the extent of softmax saturation until the larger run corrected it---which
-is itself the clearest argument in this paper against trusting a small
-author-written benchmark. The normative set has 12 items, two of which are
+about the extent of softmax saturation until the larger run corrected it. An
+earlier draft of this paper also claimed that the gap outperforms the reported
+probability as a predictor of correctness; computing both AUCs refuted it, and
+the surviving claim is the narrower one about float32 above. Both errors are
+the clearest argument in this paper against trusting a small author-written
+benchmark and an untested intuition. The normative set has 12 items, two of which are
 arguably entailed by their evidence.
 
 \section{Conclusions}
@@ -475,9 +530,10 @@ Reading a decision from answer-token logits transfers to vision--language
 models without modification and is accurate and fast on grounded perceptual
 predicates: 22 of 22 at 110--140\,ms per decision on one consumer GPU, robust
 to option order, and correct on counting, absence, false premises and
-unanswerable questions. The probability such systems report is not usable as
-confidence---it exceeded $0.9993$ on every decision we ran---while the logit
-gap behind it is a good within-family difficulty signal. That signal does not
+unanswerable questions. The probability such systems report is the same signal as the logit gap behind
+it and discriminates no worse; it is simply stored on a scale that float32
+cannot hold, collapsing to exactly 1.0 on 62\% of items where the gap still
+ranks them. That signal does not
 generalise across question families: it fails to separate perceptual questions
 from normative ones well enough to gate them, and the model is confidently
 wrong about policy. The signal is also not scale-free: halving the option set from four to two
