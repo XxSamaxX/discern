@@ -25,8 +25,8 @@ print(v)            # at eye level  [16.8 nats]
 ```
 
 It picks its own hardware: the 4B on the GPU if the checkpoint fits, the 2B on
-the GPU if only that fits, the 2B on CPU otherwise. Pass `device="cpu"` or
-`device="cuda:0"` to decide yourself.
+the GPU if only that fits, the 2B on CPU otherwise — see
+[Choosing where it runs](#choosing-where-it-runs) to decide yourself.
 
 A predicate a detector cannot express — *"is this photo posed?"*, *"is the
 white balance wrong?"*, *"is the meal already in progress?"* — costs one
@@ -83,6 +83,56 @@ Built on [SemIf](https://github.com/TheoLeeCJ/SemIf) and the
 [JEV-CPU](https://huggingface.co/Meanblock/JEV-CPU) port. The scoring engine is
 vendored unchanged (MIT) so image results stay comparable to the published text
 ones; see [THIRD_PARTY.md](THIRD_PARTY.md).
+
+## Choosing where it runs
+
+Nothing is required: `discern` measures the free VRAM against the checkpoint
+size and picks. Override it when you want to.
+
+```python
+from discern import discern, load
+
+# force the device, keep the automatic model for it
+discern("photo.jpg", "is this posed?", device="cpu")
+
+# force the model too — either one runs on either device
+discern("photo.jpg", "is this posed?",
+        model="Qwen/Qwen3-VL-2B-Instruct", device="cpu")   # 2.5 s, 12.7 GiB RAM
+discern("photo.jpg", "is this posed?",
+        model="Qwen/Qwen3-VL-4B-Instruct", device="cpu")   # 5.7 s, 21.5 GiB RAM
+discern("photo.jpg", "is this posed?",
+        model="Qwen/Qwen3-VL-2B-Instruct", device="cuda:0")  # 56 ms, 4 GiB VRAM
+
+# or pay the load once, up front, and keep it
+load(model="Qwen/Qwen3-VL-2B-Instruct", device="cpu")
+```
+
+The model is cached between calls, so passing a *different* model reloads it.
+Pick one and stick to it inside a loop.
+
+From the shell, same two flags:
+
+```bash
+discern photo.jpg "is this posed?" --device cpu
+discern photo.jpg "is this posed?" --model Qwen/Qwen3-VL-2B-Instruct --device cpu
+discern photo.jpg "what is the viewpoint?" above "eye level" below --device cpu
+```
+
+Exit code is 0 for yes, 1 for no, 2 if the gap is below the trust threshold, so
+it chains:
+
+```bash
+discern photo.jpg "is there a person?" && blur-faces photo.jpg
+```
+
+**Before forcing CPU, know what it costs** — the table under
+[Findings](#findings) has the numbers. Short version: ~50x slower, and on CPU
+the 2B beats the 4B on speed, RAM *and* usable signal, so there is rarely a
+reason to force the 4B there.
+
+**If you have neither enough VRAM nor patience**, drop the input resolution:
+cost is superlinear in visual tokens, so 448 px costs a little over half of
+640 px.
 
 ## Findings
 

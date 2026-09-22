@@ -23,7 +23,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = ["discern", "multi", "Verdict", "Uncertain", "load", "unload",
            "DEFAULT_THRESHOLD"]
@@ -50,7 +50,10 @@ def load(model: str | None = None, device: str | None = None):
         if _MODELO is not None and device is None:
             return _MODELO
         model, device = semif_vl.choose(device)
-    if _MODELO is None or _MODELO[2]["source"] != model:
+    # comparar tambien el dispositivo: pedir el mismo modelo en otro sitio debe
+    # recargarlo, no devolver silenciosamente el que ya estaba
+    if (_MODELO is None or _MODELO[2]["source"] != model
+            or (device is not None and _MODELO[2]["device"] != device)):
         _MODELO = semif_vl.load_vl_model(model, device=device)
     return _MODELO
 
