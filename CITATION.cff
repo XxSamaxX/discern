@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: "discern: semantic ifs over images from vision-language logits"
+message: "If you use this software or its measurements, please cite it."
+type: software
+authors:
+  - family-names: "Otero Agraso"
+    given-names: "Samuel"
+repository-code: "https://github.com/XxSamaxX/discern"
+license: MIT
+version: 0.1.0
+date-released: "2026-09-22"
+doi: 10.5281/zenodo.22899311
+keywords:
+  - vision-language model
+  - zero-shot classification
+  - logit readout
+  - confidence calibration

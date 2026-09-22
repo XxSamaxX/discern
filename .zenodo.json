@@ -1,0 +1,26 @@
+{
+  "title": "discern: semantic ifs over images from vision-language logits",
+  "description": "Ask a vision model a question and read the answer from its answer-token logits in one forward pass, with no decoding and nothing trained. Includes the evaluation on MMBench en/dev (4,329 items) and POPE (9,000 items) behind the paper, and the finding that the reported probability and the logit gap are one signal that only survives float32 in nats.",
+  "creators": [
+    {
+      "name": "Otero Agraso, Samuel",
+      "affiliation": "Independent researcher"
+    }
+  ],
+  "license": "mit",
+  "upload_type": "software",
+  "keywords": [
+    "vision-language model",
+    "zero-shot classification",
+    "logit readout",
+    "confidence calibration",
+    "open-vocabulary"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/TheoLeeCJ/SemIf",
+      "relation": "isDerivedFrom",
+      "scheme": "url"
+    }
+  ]
+}

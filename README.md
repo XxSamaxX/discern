@@ -1,6 +1,7 @@
 # discern
 
 [![PyPI](https://img.shields.io/pypi/v/discern-vl)](https://pypi.org/project/discern-vl/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22899311.svg)](https://doi.org/10.5281/zenodo.22899311)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ![What it does](docs/hero.png)
@@ -220,6 +221,18 @@ Our own 22-item probe is small and author-annotated; one label was wrong (we
 called a logo illegible, the model read it correctly) and was corrected. Its
 22/22 never located the model's failure boundary, which is why the MMBench run
 exists.
+
+## Citing
+
+```bibtex
+@software{oteroagraso2026discern,
+  author  = {Otero Agraso, Samuel},
+  title   = {discern: semantic ifs over images from vision-language logits},
+  year    = {2026},
+  doi     = {10.5281/zenodo.22899311},
+  url     = {https://github.com/XxSamaxX/discern}
+}
+```
 
 ## Licence
 
