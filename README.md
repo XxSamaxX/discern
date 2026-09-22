@@ -1,24 +1,59 @@
-# SIV — Semantic If Vision
+# discern
 
 ![What it does](docs/hero.png)
 
-**SIV** ports the **semantic if** — a decision read straight from a model's
-answer-token logits, with no decoding loop — from text to **vision**, and
-measuring what the reported probability actually tells you.
+Ask a vision model a question. Get the answer out of its logits in one forward
+pass — no decoding, nothing trained, no fixed label set.
+
+```python
+from discern import discern
+
+if discern("photo.jpg", "is there an identifiable person?"):
+    blur_faces()
+
+v = discern("photo.jpg", "what is the camera viewpoint?",
+            ["from above", "at eye level", "from below"])
+print(v)            # at eye level  [16.8 nats]
+```
+
+A predicate a detector cannot express — *"is this photo posed?"*, *"is the
+white balance wrong?"*, *"is the meal already in progress?"* — costs one
+prefill and about 90 ms.
+
+**The confidence you get back is the logit gap in nats, not a probability.**
+That is the whole point of this repo, and it is measured, not asserted: over
+4,329 MMBench items the softmax probability was ≥ 0.99 on **52% of the model's
+own errors**, while the gap predicts correctness with **AUC 0.894**. So
+`discern` refuses to be used as a condition when the gap is too small:
+
+```python
+v = discern("blurry.jpg", "is the person wearing a helmet?")
+bool(v)             # raises Uncertain: 1.2 nat gap, below the trust threshold
+v.answer            # 'yes'  — still there if you want it anyway
+v.trusted           # False
+```
+
+Below the threshold it also rotates the options and re-scores before answering,
+because rotation changes the winner on 11.7% of items and those have a median
+gap of 2.7 nats.
+
+Several questions about one image:
+
+```python
+from discern import multi
+
+for v in multi("photo.jpg", [
+        "is there an identifiable person?",
+        "is the white balance wrong?",
+        ("what is the camera viewpoint?", ["above", "eye level", "below"]),
+]):
+    print(v, v.probabilities)
+```
 
 Built on [SemIf](https://github.com/TheoLeeCJ/SemIf) and the
 [JEV-CPU](https://huggingface.co/Meanblock/JEV-CPU) port. The scoring engine is
-vendored unchanged (MIT) so that image results are directly comparable to text
+vendored unchanged (MIT) so image results stay comparable to the published text
 ones; see [THIRD_PARTY.md](THIRD_PARTY.md).
-
-## What this is
-
-A decision becomes a lettered multiple choice. One forward pass. Read the final
-logits at the tokens `A`, `B`, `C`. No generation.
-
-For images this means you can evaluate *predicates* a fixed-vocabulary detector
-cannot express — "is this photo posed?", "is the white balance wrong?", "is the
-meal already in progress?" — without training anything.
 
 ## Findings
 
@@ -63,11 +98,35 @@ four-option policy question whose options were not mutually exclusive, and the
 model oscillated between two *correct* answers. Independent binary predicates
 composed in Python fixed it.
 
+**The gap signal weakens as options shrink.** On POPE (9,000 binary
+yes/no questions about object presence) the same readout scores **89.6%**
+(F1 89.0), but the gap only reaches **AUC 0.777** against MMBench's 0.894, and
+the softmax is ≥ 0.99 on **86% of the errors** rather than 52%. With two slots
+the model is *confidently* wrong: its median gap when wrong is 16.4 nats, against
+5.2 on MMBench. **Ask three or more options where you can**, and demand a much
+higher threshold on binary questions.
+
+POPE also shows where object hallucination actually hides. This model does not
+over-assert presence — its yes-rate is 42.7–45.6%, *below* the 50% base rate, so
+the usual headline metric says it is clean. But precision falls 98.2% → 94.0% →
+92.0% from the random to the popular to the adversarial split while recall stays
+at exactly 83.9% throughout. The co-occurring distractors do pull it into false
+positives; the aggregate yes-rate just hides it.
+
 **Where it breaks.** The worst MMBench categories are `spatial_relationship`
 (34.5% under CircularEval, near chance) and `image_quality` (57.3%). Our 22-item
 probe had flagged exactly these two: its lowest gaps were the spatial-relation
 item (8.1 nats) and the white-balance item (7.8). The confidence signal
 identified the weak categories from a handful of examples.
+
+**An optimisation that does not work.** Questions about one image share a
+prefix — the system turn plus ~300 visual tokens — so caching it and running
+only each question's tail looks free. It is numerically exact (max probability
+difference 0.0) and **13–14% slower**, flat across 384, 852 and 1,812-token
+images, with no crossover: the cached path loses the fast attention kernel and
+that costs more than recomputing the prefix. Image preprocessing is only 3% of
+the time; the forward is 97%. Kept behind `use_cache=True` and a
+`verify_cache()` checker in case flash-attn flips the balance.
 
 **Systems note.** On a hybrid Intel CPU (i9-12900F, 8P+8E), restricting
 inference to the 8 P-cores is **1.9× faster** than using 20 threads —
@@ -79,11 +138,14 @@ Full write-up with method and statistics: [`paper/paper.pdf`](paper/paper.pdf).
 ## Layout
 
 ```
+src/discern/           the API: discern(image, question) -> Verdict
 src/semif_vl.py        vision port; readout identical to upstream, + gap/rotation calibration
 src/cascade.py         GPU predicates -> CPU policy, threaded pipeline
 src/bench_cpu4b.py     CPU thread sweep and policy benchmark
 scripts/eval_mmbench.py       MMBench harness (resumable JSONL)
 scripts/analiza_mmbench.py    accuracy, AUC, abstention curves
+scripts/eval_pope.py          POPE harness (9,000 binary questions)
+scripts/analiza_pope.py       F1, yes-rate, precision/recall by split
 src/semif_phase1/      vendored upstream engine (MIT)
 scripts/exp_gap_por_tipo.py   the perceptual-vs-normative experiment
 scripts/figuras.py     paper figures
@@ -107,6 +169,10 @@ uv pip install --python .venv/bin/python torch torchvision transformers \
 .venv/bin/python scripts/eval_mmbench.py
 .venv/bin/python scripts/eval_mmbench.py --circular
 .venv/bin/python scripts/analiza_mmbench.py results/mmbench_*_4329.jsonl
+
+# POPE: ~34 min for 9,000 binary questions
+.venv/bin/python scripts/eval_pope.py
+.venv/bin/python scripts/analiza_pope.py
 ```
 
 First run downloads Qwen3-VL-4B-Instruct (~8 GB).
