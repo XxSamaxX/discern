@@ -77,7 +77,9 @@ def vl_messages(row: dict, options: list[dict]) -> list[dict]:
     return [
         {"role": "system", "content": [{"type": "text", "text": DIRECT_SYSTEM}]},
         {"role": "user", "content": [
-            {"type": "image", "url": row["image"]},
+            # una ruta/URL va como "url"; un PIL.Image (datasets) va como "image"
+            {"type": "image", "url": row["image"]} if isinstance(row["image"], str)
+            else {"type": "image", "image": row["image"]},
             {"type": "text", "text": json.dumps(payload, ensure_ascii=False)},
         ]},
     ]
