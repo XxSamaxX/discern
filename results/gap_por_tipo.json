@@ -1,0 +1,315 @@
+{
+ "modelo": "Qwen/Qwen3-VL-4B-Instruct",
+ "perceptual": [
+  {
+   "id": "ctrl_animales_gatos",
+   "gap": 22.6875,
+   "p_ganador": 0.9999999998597366,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "ctrl_animales_sala",
+   "gap": 23.9375,
+   "p_ganador": 0.9999999999598139,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "ctrl_personas_sala",
+   "gap": 22.9375,
+   "p_ganador": 0.9999999998907629,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "posado_tenis",
+   "gap": 25.75,
+   "p_ganador": 0.9999999999934397,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "posado_cena",
+   "gap": 24.5,
+   "p_ganador": 0.9999999999771028,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "balance_sala",
+   "gap": 7.75,
+   "p_ganador": 0.9995694429186754,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "balance_gatos",
+   "gap": 10.1875,
+   "p_ganador": 0.9999623635528191,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "vista_gatos",
+   "gap": 16.708333333333336,
+   "p_ganador": 0.9999999031810773,
+   "n_opciones": 3,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "vista_tenis",
+   "gap": 16.79166666666667,
+   "p_ganador": 0.9999999426627515,
+   "n_opciones": 3,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "actividad_gatos",
+   "gap": 25.58333333333333,
+   "p_ganador": 0.9999999999851197,
+   "n_opciones": 3,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "trofeo_tenis",
+   "gap": 21.9375,
+   "p_ganador": 0.9999999997030626,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "comida_cena",
+   "gap": 14.708333333333336,
+   "p_ganador": 0.9999995758935456,
+   "n_opciones": 3,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_contar_gatos",
+   "gap": 21.875,
+   "p_ganador": 0.9999999993562556,
+   "n_opciones": 4,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_contar_mandos",
+   "gap": 17.1875,
+   "p_ganador": 0.9999999364872643,
+   "n_opciones": 4,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_mandos_iguales",
+   "gap": 7.3125,
+   "p_ganador": 0.9993332976907565,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_perro_ausente",
+   "gap": 26.4375,
+   "p_ganador": 0.9999999999967013,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_coche_premisa_falsa",
+   "gap": 22.0625,
+   "p_ganador": 0.9999999992527147,
+   "n_opciones": 4,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_hora_indeterminable",
+   "gap": 15.5,
+   "p_ganador": 0.9999996481517429,
+   "n_opciones": 4,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_suelo_sala",
+   "gap": 19.833333333333336,
+   "p_ganador": 0.9999999953247585,
+   "n_opciones": 3,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_mando_espacial",
+   "gap": 8.125,
+   "p_ganador": 0.9996192820360694,
+   "n_opciones": 3,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_gato_ausente_sala",
+   "gap": 23.5,
+   "p_ganador": 0.9999999999377585,
+   "n_opciones": 2,
+   "ok": true,
+   "flip": false
+  },
+  {
+   "id": "H_logo_gorra",
+   "gap": 13.5625,
+   "p_ganador": 0.9999973338285844,
+   "n_opciones": 4,
+   "ok": true,
+   "flip": false
+  }
+ ],
+ "normativa": [
+  {
+   "id": "N_consentimiento",
+   "gap": 15.5625,
+   "flip": false,
+   "votos": [
+    "si",
+    "si"
+   ],
+   "p_ganador": 0.9999998257021421,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_correccion",
+   "gap": 23.0625,
+   "flip": false,
+   "votos": [
+    "si",
+    "si"
+   ],
+   "p_ganador": 0.9999999999035987,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_archivo",
+   "gap": 9.625,
+   "flip": false,
+   "votos": [
+    "si",
+    "si"
+   ],
+   "p_ganador": 0.9999339478551454,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_licencia",
+   "gap": 2.75,
+   "flip": false,
+   "votos": [
+    "si",
+    "si"
+   ],
+   "p_ganador": 0.9399133498259924,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_retencion",
+   "gap": 2.25,
+   "flip": false,
+   "votos": [
+    "no",
+    "no"
+   ],
+   "p_ganador": 0.9046505351008906,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_menores",
+   "gap": 2.75,
+   "flip": true,
+   "votos": [
+    "no",
+    "si"
+   ],
+   "p_ganador": 0.9399133498259924,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_presupuesto",
+   "gap": 17.625,
+   "flip": false,
+   "votos": [
+    "no",
+    "no"
+   ],
+   "p_ganador": 0.9999999778405106,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_revision",
+   "gap": 7.875,
+   "flip": false,
+   "votos": [
+    "si",
+    "si"
+   ],
+   "p_ganador": 0.999620015485248,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_marca",
+   "gap": 6.625,
+   "flip": false,
+   "votos": [
+    "no",
+    "no"
+   ],
+   "p_ganador": 0.9986749775827868,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_acceso",
+   "gap": 11.625,
+   "flip": false,
+   "votos": [
+    "no",
+    "no"
+   ],
+   "p_ganador": 0.9999910603036951,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_prioridad",
+   "gap": 22.125,
+   "flip": false,
+   "votos": [
+    "no",
+    "no"
+   ],
+   "p_ganador": 0.9999999997538302,
+   "n_opciones": 2
+  },
+  {
+   "id": "N_caducidad",
+   "gap": 7.0,
+   "flip": false,
+   "votos": [
+    "no",
+    "no"
+   ],
+   "p_ganador": 0.9990889488055994,
+   "n_opciones": 2
+  }
+ ]
+}

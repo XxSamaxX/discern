@@ -1,0 +1,894 @@
+[
+  {
+    "id": "ctrl_animales_gatos",
+    "option_ids": [
+      "si",
+      "no"
+    ],
+    "probabilities": [
+      0.9999999998597366,
+      1.4026326426401347e-10
+    ],
+    "mean_logits": [
+      50.75,
+      28.0625
+    ],
+    "gap_nats": 22.6875,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "si"
+    ],
+    "slot_logit_medio": {
+      "A": 40.625,
+      "B": 38.1875
+    },
+    "input_tokens": 391,
+    "forward_seconds": 0.7975810300049488,
+    "forwards": 2,
+    "total_seconds": 0.8345369980015676,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "si",
+          "B": "no"
+        },
+        "logits": {
+          "si": 52.75,
+          "no": 27.625
+        },
+        "winner": "si"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "no",
+          "B": "si"
+        },
+        "logits": {
+          "no": 28.5,
+          "si": 48.75
+        },
+        "winner": "si"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "si"
+  },
+  {
+    "id": "ctrl_animales_sala",
+    "option_ids": [
+      "si",
+      "no"
+    ],
+    "probabilities": [
+      4.0186098038930055e-11,
+      0.9999999999598139
+    ],
+    "mean_logits": [
+      28.6875,
+      52.625
+    ],
+    "gap_nats": 23.9375,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "no"
+    ],
+    "slot_logit_medio": {
+      "A": 40.25,
+      "B": 41.0625
+    },
+    "input_tokens": 351,
+    "forward_seconds": 0.19936640599917155,
+    "forwards": 2,
+    "total_seconds": 0.2090817970019998,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "si",
+          "B": "no"
+        },
+        "logits": {
+          "si": 28.25,
+          "no": 53.0
+        },
+        "winner": "no"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "no",
+          "B": "si"
+        },
+        "logits": {
+          "no": 52.25,
+          "si": 29.125
+        },
+        "winner": "no"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "no"
+  },
+  {
+    "id": "ctrl_personas_sala",
+    "option_ids": [
+      "si",
+      "no"
+    ],
+    "probabilities": [
+      0.9999999998907629,
+      1.0923714004835432e-10
+    ],
+    "mean_logits": [
+      52.125,
+      29.1875
+    ],
+    "gap_nats": 22.9375,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "si"
+    ],
+    "slot_logit_medio": {
+      "A": 40.9375,
+      "B": 40.375
+    },
+    "input_tokens": 362,
+    "forward_seconds": 0.2006033080033376,
+    "forwards": 2,
+    "total_seconds": 0.21007866699801525,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "si",
+          "B": "no"
+        },
+        "logits": {
+          "si": 54.5,
+          "no": 31.0
+        },
+        "winner": "si"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "no",
+          "B": "si"
+        },
+        "logits": {
+          "no": 27.375,
+          "si": 49.75
+        },
+        "winner": "si"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "si"
+  },
+  {
+    "id": "posado_tenis",
+    "option_ids": [
+      "posada",
+      "espontanea"
+    ],
+    "probabilities": [
+      0.9999999999934397,
+      6.560200168110742e-12
+    ],
+    "mean_logits": [
+      54.0,
+      28.25
+    ],
+    "gap_nats": 25.75,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "posada"
+    ],
+    "slot_logit_medio": {
+      "A": 41.0,
+      "B": 41.25
+    },
+    "input_tokens": 404,
+    "forward_seconds": 0.2473362509990693,
+    "forwards": 2,
+    "total_seconds": 0.2590292130043963,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "posada",
+          "B": "espontanea"
+        },
+        "logits": {
+          "posada": 54.0,
+          "espontanea": 28.5
+        },
+        "winner": "posada"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "espontanea",
+          "B": "posada"
+        },
+        "logits": {
+          "espontanea": 28.0,
+          "posada": 54.0
+        },
+        "winner": "posada"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "posada"
+  },
+  {
+    "id": "posado_cena",
+    "option_ids": [
+      "posada",
+      "espontanea"
+    ],
+    "probabilities": [
+      0.9999999999771028,
+      2.2897348455931243e-11
+    ],
+    "mean_logits": [
+      53.375,
+      28.875
+    ],
+    "gap_nats": 24.5,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "posada"
+    ],
+    "slot_logit_medio": {
+      "A": 41.0625,
+      "B": 41.1875
+    },
+    "input_tokens": 364,
+    "forward_seconds": 0.20096583599661244,
+    "forwards": 2,
+    "total_seconds": 0.2114277239961666,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "posada",
+          "B": "espontanea"
+        },
+        "logits": {
+          "posada": 53.5,
+          "espontanea": 29.125
+        },
+        "winner": "posada"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "espontanea",
+          "B": "posada"
+        },
+        "logits": {
+          "espontanea": 28.625,
+          "posada": 53.25
+        },
+        "winner": "posada"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "posada"
+  },
+  {
+    "id": "balance_sala",
+    "option_ids": [
+      "correcto",
+      "dominante"
+    ],
+    "probabilities": [
+      0.00043055708132461493,
+      0.9995694429186754
+    ],
+    "mean_logits": [
+      31.125,
+      38.875
+    ],
+    "gap_nats": 7.75,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "dominante"
+    ],
+    "slot_logit_medio": {
+      "A": 35.8125,
+      "B": 34.1875
+    },
+    "input_tokens": 364,
+    "forward_seconds": 0.20146491700143088,
+    "forwards": 2,
+    "total_seconds": 0.21532170700083952,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "correcto",
+          "B": "dominante"
+        },
+        "logits": {
+          "correcto": 31.875,
+          "dominante": 38.0
+        },
+        "winner": "dominante"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "dominante",
+          "B": "correcto"
+        },
+        "logits": {
+          "dominante": 39.75,
+          "correcto": 30.375
+        },
+        "winner": "dominante"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "dominante"
+  },
+  {
+    "id": "balance_gatos",
+    "option_ids": [
+      "correcto",
+      "dominante"
+    ],
+    "probabilities": [
+      0.9999623635528191,
+      3.763644718097441e-05
+    ],
+    "mean_logits": [
+      42.0,
+      31.8125
+    ],
+    "gap_nats": 10.1875,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "correcto"
+    ],
+    "slot_logit_medio": {
+      "A": 36.5625,
+      "B": 37.25
+    },
+    "input_tokens": 404,
+    "forward_seconds": 0.24814073299785377,
+    "forwards": 2,
+    "total_seconds": 0.2578161799974623,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "correcto",
+          "B": "dominante"
+        },
+        "logits": {
+          "correcto": 42.25,
+          "dominante": 32.75
+        },
+        "winner": "correcto"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "dominante",
+          "B": "correcto"
+        },
+        "logits": {
+          "dominante": 30.875,
+          "correcto": 41.75
+        },
+        "winner": "correcto"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "correcto"
+  },
+  {
+    "id": "vista_gatos",
+    "option_ids": [
+      "cenital",
+      "nivel",
+      "contrapicado"
+    ],
+    "probabilities": [
+      0.9999999031810773,
+      5.541954929088601e-08,
+      4.1399373179608276e-08
+    ],
+    "mean_logits": [
+      47.16666666666667,
+      30.458333333333336,
+      30.166666666666664
+    ],
+    "gap_nats": 16.708333333333336,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "cenital"
+    ],
+    "slot_logit_medio": {
+      "A": 37.291666666666664,
+      "B": 35.125,
+      "C": 35.375
+    },
+    "input_tokens": 413,
+    "forward_seconds": 0.3759927389983204,
+    "forwards": 3,
+    "total_seconds": 0.3913666349981213,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "cenital",
+          "B": "nivel",
+          "C": "contrapicado"
+        },
+        "logits": {
+          "cenital": 50.75,
+          "nivel": 30.0,
+          "contrapicado": 30.625
+        },
+        "winner": "cenital"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "nivel",
+          "B": "contrapicado",
+          "C": "cenital"
+        },
+        "logits": {
+          "nivel": 30.625,
+          "contrapicado": 29.375,
+          "cenital": 44.75
+        },
+        "winner": "cenital"
+      },
+      {
+        "shift": 2,
+        "letters": {
+          "A": "contrapicado",
+          "B": "cenital",
+          "C": "nivel"
+        },
+        "logits": {
+          "contrapicado": 30.5,
+          "cenital": 46.0,
+          "nivel": 30.75
+        },
+        "winner": "cenital"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "cenital"
+  },
+  {
+    "id": "vista_tenis",
+    "option_ids": [
+      "cenital",
+      "nivel",
+      "contrapicado"
+    ],
+    "probabilities": [
+      6.348799752020904e-09,
+      0.9999999426627515,
+      5.0988448799463455e-08
+    ],
+    "mean_logits": [
+      30.541666666666664,
+      49.41666666666667,
+      32.625
+    ],
+    "gap_nats": 16.79166666666667,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "nivel"
+    ],
+    "slot_logit_medio": {
+      "A": 37.291666666666664,
+      "B": 37.25,
+      "C": 38.041666666666664
+    },
+    "input_tokens": 413,
+    "forward_seconds": 0.376325890996668,
+    "forwards": 3,
+    "total_seconds": 0.39434482600336196,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "cenital",
+          "B": "nivel",
+          "C": "contrapicado"
+        },
+        "logits": {
+          "cenital": 30.625,
+          "nivel": 48.75,
+          "contrapicado": 31.875
+        },
+        "winner": "nivel"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "nivel",
+          "B": "contrapicado",
+          "C": "cenital"
+        },
+        "logits": {
+          "nivel": 48.5,
+          "contrapicado": 33.25,
+          "cenital": 31.25
+        },
+        "winner": "nivel"
+      },
+      {
+        "shift": 2,
+        "letters": {
+          "A": "contrapicado",
+          "B": "cenital",
+          "C": "nivel"
+        },
+        "logits": {
+          "contrapicado": 32.75,
+          "cenital": 29.75,
+          "nivel": 51.0
+        },
+        "winner": "nivel"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "nivel"
+  },
+  {
+    "id": "actividad_gatos",
+    "option_ids": [
+      "descansando",
+      "jugando",
+      "comiendo"
+    ],
+    "probabilities": [
+      0.9999999999851197,
+      7.130308128330079e-12,
+      7.749960779016143e-12
+    ],
+    "mean_logits": [
+      53.0,
+      27.333333333333332,
+      27.41666666666667
+    ],
+    "gap_nats": 25.58333333333333,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "descansando"
+    ],
+    "slot_logit_medio": {
+      "A": 35.333333333333336,
+      "B": 35.333333333333336,
+      "C": 37.083333333333336
+    },
+    "input_tokens": 403,
+    "forward_seconds": 0.37054758099111496,
+    "forwards": 3,
+    "total_seconds": 0.3854015929973684,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "descansando",
+          "B": "jugando",
+          "C": "comiendo"
+        },
+        "logits": {
+          "descansando": 53.5,
+          "jugando": 27.5,
+          "comiendo": 28.75
+        },
+        "winner": "descansando"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "jugando",
+          "B": "comiendo",
+          "C": "descansando"
+        },
+        "logits": {
+          "jugando": 26.0,
+          "comiendo": 27.0,
+          "descansando": 54.0
+        },
+        "winner": "descansando"
+      },
+      {
+        "shift": 2,
+        "letters": {
+          "A": "comiendo",
+          "B": "descansando",
+          "C": "jugando"
+        },
+        "logits": {
+          "comiendo": 26.5,
+          "descansando": 51.5,
+          "jugando": 28.5
+        },
+        "winner": "descansando"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "descansando"
+  },
+  {
+    "id": "trofeo_tenis",
+    "option_ids": [
+      "si",
+      "no"
+    ],
+    "probabilities": [
+      0.9999999997030626,
+      2.969373327305422e-10
+    ],
+    "mean_logits": [
+      54.0,
+      32.0625
+    ],
+    "gap_nats": 21.9375,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "si"
+    ],
+    "slot_logit_medio": {
+      "A": 44.25,
+      "B": 41.8125
+    },
+    "input_tokens": 395,
+    "forward_seconds": 0.246635798997886,
+    "forwards": 2,
+    "total_seconds": 0.26152994099538773,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "si",
+          "B": "no"
+        },
+        "logits": {
+          "si": 56.25,
+          "no": 31.875
+        },
+        "winner": "si"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "no",
+          "B": "si"
+        },
+        "logits": {
+          "no": 32.25,
+          "si": 51.75
+        },
+        "winner": "si"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "si"
+  },
+  {
+    "id": "comida_cena",
+    "option_ids": [
+      "sin_empezar",
+      "en_curso",
+      "terminada"
+    ],
+    "probabilities": [
+      4.094980246641545e-07,
+      0.9999995758935456,
+      1.4608429807582062e-08
+    ],
+    "mean_logits": [
+      31.291666666666664,
+      46.0,
+      27.958333333333332
+    ],
+    "gap_nats": 14.708333333333336,
+    "winner_flips": false,
+    "winners_por_rotacion": [
+      "en_curso"
+    ],
+    "slot_logit_medio": {
+      "A": 36.125,
+      "B": 34.0,
+      "C": 35.125
+    },
+    "input_tokens": 372,
+    "forward_seconds": 0.3068884980020812,
+    "forwards": 3,
+    "total_seconds": 0.32351009199919645,
+    "calibrated": true,
+    "per_rotation": [
+      {
+        "shift": 0,
+        "letters": {
+          "A": "sin_empezar",
+          "B": "en_curso",
+          "C": "terminada"
+        },
+        "logits": {
+          "sin_empezar": 34.0,
+          "en_curso": 44.0,
+          "terminada": 27.5
+        },
+        "winner": "en_curso"
+      },
+      {
+        "shift": 1,
+        "letters": {
+          "A": "en_curso",
+          "B": "terminada",
+          "C": "sin_empezar"
+        },
+        "logits": {
+          "en_curso": 47.75,
+          "terminada": 29.75,
+          "sin_empezar": 31.625
+        },
+        "winner": "en_curso"
+      },
+      {
+        "shift": 2,
+        "letters": {
+          "A": "terminada",
+          "B": "sin_empezar",
+          "C": "en_curso"
+        },
+        "logits": {
+          "terminada": 26.625,
+          "sin_empezar": 28.25,
+          "en_curso": 46.25
+        },
+        "winner": "en_curso"
+      }
+    ],
+    "prompt_version": "direct-options-vl-v1",
+    "model": {
+      "source": "Qwen/Qwen3-VL-4B-Instruct",
+      "dtype": "bfloat16",
+      "device": "cuda:0",
+      "load_seconds": 6.3,
+      "torch_version": "2.14.0+cu130",
+      "transformers_version": "5.17.0"
+    },
+    "readout": "native full-vocabulary last-position logits restricted to declared answer slots",
+    "probability_status": "order-averaged over cyclic option rotations",
+    "truth": "en_curso"
+  }
+]

@@ -1,0 +1,25 @@
+[descarga ok, lanzando banco]
+[load] Qwen/Qwen3.5-4B fp32 CPU...
+[transformers] `chunk_gated_delta_rule` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+[load] 23s | 4.21B params | RSS 21.3 GiB
+
+====================================================
+1) LATENCIA POR NUMERO DE HILOS
+    4 hilos     2033 ms/forward
+    8 hilos     1359 ms/forward
+   12 hilos     2265 ms/forward
+   16 hilos     2625 ms/forward
+   20 hilos     2392 ms/forward
+  -> mejor: 8 hilos (1359 ms)
+
+====================================================
+2) POLITICA: mismo 2x2 que fallo con el 0.6B
+  cast+personas          json   -> no       gap   0.8n  estable MAL
+  cast+personas          prosa  -> si       gap   0.9n  estable OK
+  limpio+sin_personas    json   -> no       gap   2.3n  estable OK
+  limpio+sin_personas    prosa  -> no       gap   0.7n  estable OK
+
+====================================================
+RSS pico 21.3 GiB
+
+[exited with code 0]

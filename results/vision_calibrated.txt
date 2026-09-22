@@ -1,0 +1,96 @@
+[load] Qwen/Qwen3-VL-4B-Instruct (bf16 / cuda)
+[load] 6.3s, VRAM 8.3 GiB, transformers=5.17.0
+=== ctrl_animales_gatos ===  [OK]
+  -> si   (gap 22.7 nats)
+    si                     100.0%  #############################
+    no                       0.0%  
+  (2 fwd, 798 ms total, 391 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+40.6  B:+38.2
+=== ctrl_animales_sala ===  [OK]
+  -> no   (gap 23.9 nats)
+    no                     100.0%  #############################
+    si                       0.0%  
+  (2 fwd, 199 ms total, 351 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+40.2  B:+41.1
+=== ctrl_personas_sala ===  [OK]
+  -> si   (gap 22.9 nats)
+    si                     100.0%  #############################
+    no                       0.0%  
+  (2 fwd, 201 ms total, 362 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+40.9  B:+40.4
+=== posado_tenis ===  [OK]
+  -> posada   (gap 25.8 nats)
+    posada                 100.0%  #############################
+    espontanea               0.0%  
+  (2 fwd, 247 ms total, 404 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+41.0  B:+41.2
+=== posado_cena ===  [OK]
+  -> posada   (gap 24.5 nats)
+    posada                 100.0%  #############################
+    espontanea               0.0%  
+  (2 fwd, 201 ms total, 364 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+41.1  B:+41.2
+=== balance_sala ===  [OK]
+  -> dominante   (gap 7.8 nats)
+    dominante              100.0%  #############################
+    correcto                 0.0%  
+  (2 fwd, 201 ms total, 364 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+35.8  B:+34.2
+=== balance_gatos ===  [OK]
+  -> correcto   (gap 10.2 nats)
+    correcto               100.0%  #############################
+    dominante                0.0%  
+  (2 fwd, 248 ms total, 404 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+36.6  B:+37.2
+=== vista_gatos ===  [OK]
+  -> cenital   (gap 16.7 nats)
+    cenital                100.0%  #############################
+    nivel                    0.0%  
+    contrapicado             0.0%  
+  (3 fwd, 376 ms total, 413 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+37.3  B:+35.1  C:+35.4
+=== vista_tenis ===  [OK]
+  -> nivel   (gap 16.8 nats)
+    nivel                  100.0%  #############################
+    contrapicado             0.0%  
+    cenital                  0.0%  
+  (3 fwd, 376 ms total, 413 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+37.3  B:+37.2  C:+38.0
+=== actividad_gatos ===  [OK]
+  -> descansando   (gap 25.6 nats)
+    descansando            100.0%  #############################
+    comiendo                 0.0%  
+    jugando                  0.0%  
+  (3 fwd, 371 ms total, 403 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+35.3  B:+35.3  C:+37.1
+=== trofeo_tenis ===  [OK]
+  -> si   (gap 21.9 nats)
+    si                     100.0%  #############################
+    no                       0.0%  
+  (2 fwd, 247 ms total, 395 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+44.2  B:+41.8
+=== comida_cena ===  [OK]
+  -> en_curso   (gap 14.7 nats)
+    en_curso               100.0%  #############################
+    sin_empezar              0.0%  
+    terminada                0.0%  
+  (3 fwd, 307 ms total, 372 tok, calibrado=True)
+  cambia el ganador al rotar: no
+  logit medio por slot: A:+36.1  B:+34.0  C:+35.1
+====================================================
+ACIERTO   12/12 (100%)   calibrado=True
+FORWARDS  28 en 3.8s  ->  135 ms/forward
+WALL      4.0s para 12 decisiones (329 ms/decision)
+VRAM pico 8.4 GiB
+[out] /home/sama/jev/JEV-CPU/vl_results.json

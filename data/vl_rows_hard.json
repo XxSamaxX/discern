@@ -1,0 +1,221 @@
+[
+ {
+  "id": "H_contar_gatos",
+  "image": "img/gatos_sofa.jpg",
+  "truth": "dos",
+  "familia": "conteo",
+  "question": "How many cats are in the image?",
+  "options": [
+   {
+    "id": "uno",
+    "description": "Exactly 1"
+   },
+   {
+    "id": "dos",
+    "description": "Exactly 2"
+   },
+   {
+    "id": "tres",
+    "description": "Exactly 3"
+   },
+   {
+    "id": "cuatro_o_mas",
+    "description": "4 or more"
+   }
+  ]
+ },
+ {
+  "id": "H_contar_mandos",
+  "image": "img/gatos_sofa.jpg",
+  "truth": "dos",
+  "familia": "conteo",
+  "question": "How many remote controls are in the image?",
+  "options": [
+   {
+    "id": "uno",
+    "description": "Exactly 1"
+   },
+   {
+    "id": "dos",
+    "description": "Exactly 2"
+   },
+   {
+    "id": "tres",
+    "description": "Exactly 3"
+   },
+   {
+    "id": "cuatro_o_mas",
+    "description": "4 or more"
+   }
+  ]
+ },
+ {
+  "id": "H_mandos_iguales",
+  "image": "img/gatos_sofa.jpg",
+  "truth": "distintos",
+  "familia": "fino",
+  "question": "Are the two remote controls the same model as each other?",
+  "options": [
+   {
+    "id": "iguales",
+    "description": "Yes, both are the same model"
+   },
+   {
+    "id": "distintos",
+    "description": "No, they are different models"
+   }
+  ]
+ },
+ {
+  "id": "H_perro_ausente",
+  "image": "img/gatos_sofa.jpg",
+  "truth": "no",
+  "familia": "ausencia",
+  "question": "Is there a dog in the image?",
+  "options": [
+   {
+    "id": "si",
+    "description": "Yes, a dog is present"
+   },
+   {
+    "id": "no",
+    "description": "No dog is present"
+   }
+  ]
+ },
+ {
+  "id": "H_coche_premisa_falsa",
+  "image": "img/sala_tv.jpg",
+  "truth": "no_hay_coche",
+  "familia": "premisa_falsa",
+  "question": "What colour is the car in this image?",
+  "options": [
+   {
+    "id": "rojo",
+    "description": "The car is red"
+   },
+   {
+    "id": "azul",
+    "description": "The car is blue"
+   },
+   {
+    "id": "blanco",
+    "description": "The car is white"
+   },
+   {
+    "id": "no_hay_coche",
+    "description": "There is no car in the image"
+   }
+  ]
+ },
+ {
+  "id": "H_hora_indeterminable",
+  "image": "img/gatos_sofa.jpg",
+  "truth": "no_determinable",
+  "familia": "incognoscible",
+  "question": "What time of day was this photograph taken?",
+  "options": [
+   {
+    "id": "manana",
+    "description": "Morning"
+   },
+   {
+    "id": "tarde",
+    "description": "Afternoon"
+   },
+   {
+    "id": "noche",
+    "description": "Night"
+   },
+   {
+    "id": "no_determinable",
+    "description": "Cannot be determined from the image"
+   }
+  ]
+ },
+ {
+  "id": "H_suelo_sala",
+  "image": "img/sala_tv.jpg",
+  "truth": "madera",
+  "familia": "fino",
+  "question": "What is the floor made of in the foreground?",
+  "options": [
+   {
+    "id": "madera",
+    "description": "Wood or laminate planks"
+   },
+   {
+    "id": "baldosa",
+    "description": "Ceramic or stone tile"
+   },
+   {
+    "id": "moqueta",
+    "description": "Wall-to-wall carpet"
+   }
+  ]
+ },
+ {
+  "id": "H_mando_espacial",
+  "image": "img/gatos_sofa.jpg",
+  "truth": "entre",
+  "familia": "espacial",
+  "question": "Where is the narrow upright remote control located relative to the two cats?",
+  "options": [
+   {
+    "id": "izquierda",
+    "description": "To the left of both cats"
+   },
+   {
+    "id": "entre",
+    "description": "Between the two cats"
+   },
+   {
+    "id": "derecha",
+    "description": "To the right of both cats"
+   }
+  ]
+ },
+ {
+  "id": "H_gato_ausente_sala",
+  "image": "img/sala_tv.jpg",
+  "truth": "no",
+  "familia": "ausencia",
+  "question": "Is there a cat visible in this image?",
+  "options": [
+   {
+    "id": "si",
+    "description": "Yes, a cat is visible"
+   },
+   {
+    "id": "no",
+    "description": "No cat is visible"
+   }
+  ]
+ },
+ {
+  "id": "H_logo_gorra",
+  "image": "img/tenis_ninos.jpg",
+  "truth": "adidas",
+  "familia": "fino",
+  "question": "What brand name is printed on the white cap of the boy on the far right?",
+  "options": [
+   {
+    "id": "nike",
+    "description": "Nike"
+   },
+   {
+    "id": "adidas",
+    "description": "Adidas"
+   },
+   {
+    "id": "puma",
+    "description": "Puma"
+   },
+   {
+    "id": "no_legible",
+    "description": "Not legible or no brand visible"
+   }
+  ],
+  "nota": "etiqueta corregida: el logo Adidas SI es legible (~20x15 px en el original)"
+ }
+]

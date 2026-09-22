@@ -1,0 +1,41 @@
+###### PIPELINE ######
+[cfg] 4 imagenes | 3 predicados visuales | hilos CPU=20/24
+[gpu] cargando Qwen/Qwen3-VL-4B-Instruct...
+[gpu] 6.3s, VRAM 8.3 GiB
+[cpu] cargando Qwen/Qwen3-0.6B (fp32)...
+[cpu] 3.2s, RAM ~2.2 GiB
+
+==================================================================
+cena_familia.jpg     balance=neutro(1.00)  personas=con_personas(1.00)  encuadre=posada(1.00)
+                     -> PUBLICAR (1.00)  [gpu 1034ms / cpu 447ms]
+gatos_sofa.jpg       balance=neutro(1.00)  personas=sin_personas(1.00)  encuadre=posada(0.91)
+                     -> PUBLICAR (1.00)  [gpu 379ms / cpu 383ms]
+sala_tv.jpg          balance=dominante(1.00)  personas=con_personas(1.00)  encuadre=espontanea(1.00)
+                     -> PUBLICAR (1.00)  [gpu 309ms / cpu 408ms]
+tenis_ninos.jpg      balance=neutro(1.00)  personas=con_personas(1.00)  encuadre=posada(1.00)
+                     -> PUBLICAR (1.00)  [gpu 380ms / cpu 384ms]
+==================================================================
+PIPELINE   wall 2.72s   gpu_busy 2.10s   cpu_busy 1.62s   suma 3.72s
+solape  1.00s ahorrados  (27% vs sumar)
+VRAM pico 8.4 GiB
+
+###### SECUENCIAL ######
+[cfg] 4 imagenes | 3 predicados visuales | hilos CPU=20/24
+[gpu] cargando Qwen/Qwen3-VL-4B-Instruct...
+[gpu] 6.8s, VRAM 8.3 GiB
+[cpu] cargando Qwen/Qwen3-0.6B (fp32)...
+[cpu] 1.7s, RAM ~2.2 GiB
+
+==================================================================
+cena_familia.jpg     balance=neutro(1.00)  personas=con_personas(1.00)  encuadre=posada(1.00)
+                     -> PUBLICAR (1.00)  [gpu 930ms / cpu 359ms]
+gatos_sofa.jpg       balance=neutro(1.00)  personas=sin_personas(1.00)  encuadre=posada(0.91)
+                     -> PUBLICAR (1.00)  [gpu 378ms / cpu 335ms]
+sala_tv.jpg          balance=dominante(1.00)  personas=con_personas(1.00)  encuadre=espontanea(1.00)
+                     -> PUBLICAR (1.00)  [gpu 305ms / cpu 344ms]
+tenis_ninos.jpg      balance=neutro(1.00)  personas=con_personas(1.00)  encuadre=posada(1.00)
+                     -> PUBLICAR (1.00)  [gpu 379ms / cpu 343ms]
+==================================================================
+SECUENCIAL   wall 3.49s   gpu_busy 1.99s   cpu_busy 1.38s   suma 3.37s
+solape  -0.12s ahorrados  (-4% vs sumar)
+VRAM pico 8.4 GiB

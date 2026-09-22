@@ -1,0 +1,49 @@
+[
+ {"id":"ctrl_animales_gatos","image":"img/gatos_sofa.jpg","truth":"si",
+  "question":"Does the image contain any animal?",
+  "options":[{"id":"si","description":"Yes, there is at least one animal"},{"id":"no","description":"No animals"}]},
+
+ {"id":"ctrl_animales_sala","image":"img/sala_tv.jpg","truth":"no",
+  "question":"Does the image contain any animal?",
+  "options":[{"id":"si","description":"Yes, there is at least one animal"},{"id":"no","description":"No animals"}]},
+
+ {"id":"ctrl_personas_sala","image":"img/sala_tv.jpg","truth":"si",
+  "question":"Are there any people visible in the image, even small or in the background?",
+  "options":[{"id":"si","description":"Yes, at least one person is visible"},{"id":"no","description":"No people at all"}]},
+
+ {"id":"posado_tenis","image":"img/tenis_ninos.jpg","truth":"posada",
+  "question":"Is this photograph posed or candid?",
+  "options":[{"id":"posada","description":"Posed: subjects are aware of the camera and arranged for it"},{"id":"espontanea","description":"Candid: subjects are unaware, caught mid-action"}]},
+
+ {"id":"posado_cena","image":"img/cena_familia.jpg","truth":"posada",
+  "question":"Is this photograph posed or candid?",
+  "options":[{"id":"posada","description":"Posed: subjects are aware of the camera and arranged for it"},{"id":"espontanea","description":"Candid: subjects are unaware, caught mid-action"}]},
+
+ {"id":"balance_sala","image":"img/sala_tv.jpg","truth":"dominante",
+  "question":"Assess the white balance of this photograph.",
+  "options":[{"id":"correcto","description":"Neutral: whites look white, no colour cast"},{"id":"dominante","description":"Incorrect: a strong overall colour cast tints the whole image"}]},
+
+ {"id":"balance_gatos","image":"img/gatos_sofa.jpg","truth":"correcto",
+  "question":"Assess the white balance of this photograph.",
+  "options":[{"id":"correcto","description":"Neutral: whites look white, no colour cast"},{"id":"dominante","description":"Incorrect: a strong overall colour cast tints the whole image"}]},
+
+ {"id":"vista_gatos","image":"img/gatos_sofa.jpg","truth":"cenital",
+  "question":"What is the camera viewpoint?",
+  "options":[{"id":"cenital","description":"From above, looking down on the subject"},{"id":"nivel","description":"At eye level with the subject"},{"id":"contrapicado","description":"From below, looking up at the subject"}]},
+
+ {"id":"vista_tenis","image":"img/tenis_ninos.jpg","truth":"nivel",
+  "question":"What is the camera viewpoint?",
+  "options":[{"id":"cenital","description":"From above, looking down on the subject"},{"id":"nivel","description":"At eye level with the subject"},{"id":"contrapicado","description":"From below, looking up at the subject"}]},
+
+ {"id":"actividad_gatos","image":"img/gatos_sofa.jpg","truth":"descansando",
+  "question":"What are the animals doing?",
+  "options":[{"id":"descansando","description":"Resting or sleeping"},{"id":"jugando","description":"Playing or moving actively"},{"id":"comiendo","description":"Eating or drinking"}]},
+
+ {"id":"trofeo_tenis","image":"img/tenis_ninos.jpg","truth":"si",
+  "question":"Is someone holding a trophy or award?",
+  "options":[{"id":"si","description":"Yes, a trophy or award is being held"},{"id":"no","description":"No trophy or award"}]},
+
+ {"id":"comida_cena","image":"img/cena_familia.jpg","truth":"en_curso",
+  "question":"What stage is the meal at?",
+  "options":[{"id":"sin_empezar","description":"Not started: food served but untouched"},{"id":"en_curso","description":"In progress: plates partly eaten"},{"id":"terminada","description":"Finished: plates empty, meal over"}]}
+]

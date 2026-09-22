@@ -1,0 +1,23 @@
+[cfg] 4 imagenes | 3 predicados visuales | hilos CPU=20/24
+[gpu] cargando Qwen/Qwen3-VL-4B-Instruct...
+[gpu] 6.2s, VRAM 8.3 GiB
+[cpu] cargando Qwen/Qwen3-0.6B (fp32)...
+[cpu] 1.6s, RAM ~2.2 GiB
+
+==================================================================
+cena_familia.jpg     balance=neutro(1.00)  personas=con_personas(1.00)  encuadre=posada(1.00)
+                     color=no[6.1n]  consentimiento=si[4.0n]
+                     -> PEDIR_CONSENTIMIENTO  [gpu 902ms / cpu 959ms]
+gatos_sofa.jpg       balance=neutro(1.00)  personas=sin_personas(1.00)  encuadre=posada(0.91)
+                     color=no[8.3n]  consentimiento=si[0.8n]
+                     -> PEDIR_CONSENTIMIENTO  [gpu 383ms / cpu 941ms]
+sala_tv.jpg          balance=dominante(1.00)  personas=con_personas(1.00)  encuadre=espontanea(1.00)
+                     color=no(INESTABLE)[9.3n]  consentimiento=si[8.2n]
+                     -> PEDIR_CONSENTIMIENTO  [gpu 313ms / cpu 957ms]
+tenis_ninos.jpg      balance=neutro(1.00)  personas=con_personas(1.00)  encuadre=posada(1.00)
+                     color=no[6.1n]  consentimiento=si[4.0n]
+                     -> PEDIR_CONSENTIMIENTO  [gpu 381ms / cpu 940ms]
+==================================================================
+PIPELINE   wall 4.75s   gpu_busy 1.98s   cpu_busy 3.80s   suma 5.78s
+solape  1.03s ahorrados  (18% vs sumar)
+VRAM pico 8.4 GiB

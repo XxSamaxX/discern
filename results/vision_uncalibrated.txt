@@ -1,0 +1,74 @@
+[load] Qwen/Qwen3-VL-4B-Instruct (bf16 / cuda)
+[load] 154.9s, VRAM 8.3 GiB, transformers=5.17.0
+=== ctrl_animales_gatos ===  [OK]
+  -> si   (margen 100.0 pp)
+    si                     100.0%  #############################
+    no                       0.0%  
+  (1 fwd, 11198 ms total, 391 tok, calibrado=False)
+=== ctrl_animales_sala ===  [OK]
+  -> no   (margen 100.0 pp)
+    no                     100.0%  #############################
+    si                       0.0%  
+  (1 fwd, 107 ms total, 351 tok, calibrado=False)
+=== ctrl_personas_sala ===  [OK]
+  -> si   (margen 100.0 pp)
+    si                     100.0%  #############################
+    no                       0.0%  
+  (1 fwd, 100 ms total, 362 tok, calibrado=False)
+=== posado_tenis ===  [OK]
+  -> posada   (margen 100.0 pp)
+    posada                 100.0%  #############################
+    espontanea               0.0%  
+  (1 fwd, 123 ms total, 404 tok, calibrado=False)
+=== posado_cena ===  [OK]
+  -> posada   (margen 100.0 pp)
+    posada                 100.0%  #############################
+    espontanea               0.0%  
+  (1 fwd, 100 ms total, 364 tok, calibrado=False)
+=== balance_sala ===  [OK]
+  -> dominante   (margen 99.6 pp)
+    dominante               99.8%  #############################
+    correcto                 0.2%  
+  (1 fwd, 100 ms total, 364 tok, calibrado=False)
+=== balance_gatos ===  [OK]
+  -> correcto   (margen 100.0 pp)
+    correcto               100.0%  #############################
+    dominante                0.0%  
+  (1 fwd, 124 ms total, 404 tok, calibrado=False)
+=== vista_gatos ===  [OK]
+  -> cenital   (margen 100.0 pp)
+    cenital                100.0%  #############################
+    contrapicado             0.0%  
+    nivel                    0.0%  
+  (1 fwd, 123 ms total, 413 tok, calibrado=False)
+=== vista_tenis ===  [OK]
+  -> nivel   (margen 100.0 pp)
+    nivel                  100.0%  #############################
+    contrapicado             0.0%  
+    cenital                  0.0%  
+  (1 fwd, 123 ms total, 413 tok, calibrado=False)
+=== actividad_gatos ===  [OK]
+  -> descansando   (margen 100.0 pp)
+    descansando            100.0%  #############################
+    comiendo                 0.0%  
+    jugando                  0.0%  
+  (1 fwd, 123 ms total, 403 tok, calibrado=False)
+=== trofeo_tenis ===  [OK]
+  -> si   (margen 100.0 pp)
+    si                     100.0%  #############################
+    no                       0.0%  
+  (1 fwd, 123 ms total, 395 tok, calibrado=False)
+=== comida_cena ===  [OK]
+  -> en_curso   (margen 100.0 pp)
+    en_curso               100.0%  #############################
+    sin_empezar              0.0%  
+    terminada                0.0%  
+  (1 fwd, 101 ms total, 372 tok, calibrado=False)
+====================================================
+ACIERTO   12/12 (100%)   calibrado=False
+FORWARDS  12 en 12.4s  ->  1037 ms/forward
+WALL      12.7s para 12 decisiones (1060 ms/decision)
+VRAM pico 8.4 GiB
+[out] /home/sama/jev/JEV-CPU/vl_results.json
+
+[exited with code 0]
