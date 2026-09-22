@@ -13,3 +13,5 @@ paper/p-*.png
 dist/
 *.egg-info/
 build/
+arxiv/
+arxiv-discern.tar.gz
