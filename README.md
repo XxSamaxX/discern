@@ -148,6 +148,7 @@ Full write-up with method and statistics: [`paper/paper.pdf`](paper/paper.pdf).
 src/discern/__init__.py       the API: discern(image, question) -> Verdict
 src/discern/_batch.py         multi(): several questions, one image
 src/discern/_readout.py       the vision port; readout identical to upstream
+scripts/eval_probe.py         runs the hand-built 22-item probe
 src/discern/_semif/           vendored upstream engine (MIT)
 scripts/cascade.py            GPU predicates -> CPU policy, threaded pipeline
 scripts/bench_cpu4b.py        CPU thread sweep and policy benchmark
@@ -172,7 +173,7 @@ git clone https://github.com/XxSamaxX/discern && cd discern
 uv venv --python 3.11 .venv
 uv pip install --python .venv/bin/python -e ".[bench]"
 
-.venv/bin/python -m discern.\_readout --rows data/vl_rows_hard.json --calibrate
+.venv/bin/python scripts/eval_probe.py --rows data/vl_rows_hard.json --calibrate
 .venv/bin/python scripts/exp_gap_por_tipo.py
 .venv/bin/python scripts/bench_cpu4b.py      # needs ~21 GiB RAM
 
