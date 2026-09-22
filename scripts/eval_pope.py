@@ -29,12 +29,14 @@ def main() -> None:
     ap.add_argument("--splits", default="random,popular,adversarial")
     ap.add_argument("--limit", type=int, default=0, help="por particion; 0 = todo")
     ap.add_argument("--model", default=semif_vl.DEFAULT_MODEL)
+    ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     from datasets import load_dataset
     ds = load_dataset("lmms-lab-encoder/POPE", "Full")
 
-    out = os.path.join(_R, "results", "pope.jsonl")
+    slug = args.model.split("/")[-1].replace(".", "").lower()
+    out = args.out or os.path.join(_R, "results", f"pope_{slug}.jsonl")
     hechos = set()
     if os.path.exists(out):
         with open(out) as fh:

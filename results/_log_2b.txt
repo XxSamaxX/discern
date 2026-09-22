@@ -1,0 +1,35 @@
+###### 2B MMBench VANILLA ######
+   3900/4329  acierto  83.3%      56 ms/item  eta 0 min
+   4000/4329  acierto  83.6%      56 ms/item  eta 0 min
+   4100/4329  acierto  83.6%      56 ms/item  eta 0 min
+   4200/4329  acierto  83.5%      56 ms/item  eta 0 min
+   4300/4329  acierto  83.3%      56 ms/item  eta 0 min
+
+========================================================
+VANILLA   3604/4329 = 83.3%
+tiempo    4.0 min (56 ms/item)
+salida    /home/sama/jev/discern/results/mmbench_qwen3-vl-2b-instruct_vanilla_4329.jsonl
+
+###### 2B MMBench CIRCULAR ######
+   3900/4329  acierto  76.1%     217 ms/item  eta 2 min
+   4000/4329  acierto  76.6%     217 ms/item  eta 1 min
+   4100/4329  acierto  76.5%     217 ms/item  eta 1 min
+   4200/4329  acierto  76.4%     217 ms/item  eta 0 min
+   4300/4329  acierto  76.3%     218 ms/item  eta 0 min
+
+========================================================
+CIRCULAR  3299/4329 = 76.2%
+tiempo    15.7 min (218 ms/item)
+salida    /home/sama/jev/discern/results/mmbench_qwen3-vl-2b-instruct_circular_4329.jsonl
+
+###### 2B POPE ######
+   7750  acierto  90.3%    160 ms/item  eta 3 min
+   8000  acierto  90.3%    159 ms/item  eta 3 min
+   8250  acierto  90.1%    159 ms/item  eta 2 min
+   8500  acierto  90.0%    158 ms/item  eta 1 min
+   8750  acierto  89.9%    158 ms/item  eta 1 min
+   9000  acierto  89.8%    158 ms/item  eta 0 min
+
+========================================================
+vanilla 8086/9000 = 89.8%
+tiempo 23.7 min | salida /home/sama/jev/discern/results/pope_qwen3-vl-2b-instruct.jsonl

@@ -47,9 +47,10 @@ def recesivo(ax, eje="y"):
     ax.set_axisbelow(True)
 
 
-V = carga("mmbench_vanilla_4329.jsonl")
-C = carga("mmbench_circular_4329.jsonl")
-P = carga("pope.jsonl")
+MOD = os.environ.get("DISCERN_MODEL_SLUG", "qwen3-vl-4b-instruct")
+V = carga(f"mmbench_{MOD}_vanilla_4329.jsonl")
+C = carga(f"mmbench_{MOD}_circular_4329.jsonl")
+P = carga(f"pope_{MOD}.jsonl")
 
 # ============================================================ fig 1 (2 cols)
 # El gap y la probabilidad son la MISMA senal; solo una sobrevive a float32.

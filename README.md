@@ -24,6 +24,10 @@ v = discern("photo.jpg", "what is the camera viewpoint?",
 print(v)            # at eye level  [16.8 nats]
 ```
 
+It picks its own hardware: the 4B on the GPU if the checkpoint fits, the 2B on
+the GPU if only that fits, the 2B on CPU otherwise. Pass `device="cpu"` or
+`device="cuda:0"` to decide yourself.
+
 A predicate a detector cannot express — *"is this photo posed?"*, *"is the
 white balance wrong?"*, *"is the meal already in progress?"* — costs one
 prefill and about 90 ms.
@@ -155,6 +159,30 @@ that costs more than recomputing the prefix. Image preprocessing is only 3% of
 the time; the forward is 97%. Kept behind `use_cache=True` and a
 `verify_cache()` checker in case flash-attn flips the balance.
 
+**It runs without a GPU, at a price worth knowing.** Measured on an i9-12900F
+(8P+8E), one 640x480 photograph, float32:
+
+| | GPU (RTX 3080) | CPU, 8 threads | RAM |
+|---|---|---|---|
+| Qwen3-VL-2B | 56 ms | **2,458 ms** (x44) | 12.7 GiB |
+| Qwen3-VL-4B | 91 ms | 5,707 ms (x63) | 21.5 GiB |
+
+So CPU is for batch work — filtering an archive, flagging what needs human
+review — not for anything interactive. Two consequences the library applies on
+its own: **on CPU it defaults to the 2B**, which is 2.3x faster, needs 9 GiB
+less RAM and collapses less under float32 (26% against 62%) while giving up 4.1
+points on MMBench and gaining on POPE; and it **caps itself at 8 threads**,
+because on this hybrid CPU using all 24 is 2.3x slower.
+
+Resolution is the lever if you are stuck on CPU — the cost is superlinear in
+visual tokens:
+
+| image | visual tokens | 2B on CPU |
+|---|---|---|
+| 448 px | 224 | 1,762 ms |
+| 640 px | 384 | 3,264 ms |
+| 1024 px | 852 | 8,911 ms |
+
 **Systems note.** On a hybrid Intel CPU (i9-12900F, 8P+8E), restricting
 inference to the 8 P-cores is **1.9× faster** than using 20 threads —
 scheduling onto E-cores actively hurts. Overlapping a GPU vision stage with a
@@ -175,6 +203,7 @@ scripts/bench_cpu4b.py        CPU thread sweep and policy benchmark
 scripts/eval_mmbench.py       MMBench harness (resumable JSONL)
 scripts/analiza_mmbench.py    accuracy, AUC, abstention curves
 scripts/eval_pope.py          POPE harness (9,000 binary questions)
+scripts/bench_cpu_vision.py   CPU latency: thread sweep and resolution sweep
 scripts/analiza_pope.py       F1, yes-rate, precision/recall by split
 scripts/exp_gap_por_tipo.py   the perceptual-vs-normative experiment
 scripts/figuras.py     paper figures

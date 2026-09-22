@@ -7,9 +7,9 @@ dos slots, que es el peor caso para la saturacion de la softmax.
 import collections, itertools, json, math, os, statistics, sys
 
 _R = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-R = [j for j in (json.loads(l) for l in
-     open(os.path.join(_R, "results", "pope.jsonl")) if l.strip())
-     if "error" not in j]
+_FICH = sys.argv[1] if len(sys.argv) > 1 else "pope_qwen3-vl-4b-instruct.jsonl"
+_RUTA = _FICH if os.path.isabs(_FICH) else os.path.join(_R, "results", _FICH)
+R = [j for j in (json.loads(l) for l in open(_RUTA) if l.strip()) if "error" not in j]
 
 
 def auc_mw(pos, neg):
@@ -36,7 +36,7 @@ def metricas(rs):
     return acc, prec, rec, f1, yes
 
 
-print(f"POPE — {len(R)} items\n")
+print(f"POPE — {os.path.basename(_RUTA)} — {len(R)} items\n")
 print(f"{'particion':<14}{'n':>6}{'acc':>8}{'prec':>8}{'rec':>8}{'F1':>8}{'yes-rate':>10}")
 print("-" * 62)
 por = collections.defaultdict(list)

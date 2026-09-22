@@ -13,6 +13,7 @@ porque el repo declara sus probabilidades como "uncalibrated".
 from __future__ import annotations
 
 import json
+import functools
 import os
 import time
 
@@ -23,20 +24,111 @@ from ._semif.core import DIRECT_SYSTEM, LETTERS, digest, softmax, validate_row
 
 PROMPT_VERSION = "direct-options-vl-v1"
 DEFAULT_MODEL = "Qwen/Qwen3-VL-4B-Instruct"
+# En CPU el 4B no compensa, y no por poco: 5707 ms frente a 2458 del 2B en esta
+# maquina (i9-12900F, 8 hilos), 21.5 GiB de RAM residente frente a 12.7, y un
+# colapso de float32 del 62% frente al 26%. Pierde 4.1 puntos en MMBench y gana
+# en POPE. El factor CPU/GPU ademas empeora al escalar: x44 en el 2B, x63 en el
+# 4B. Medido en scripts/bench_cpu_vision.py.
+DEFAULT_MODEL_CPU = "Qwen/Qwen3-VL-2B-Instruct"
 
 
 # ---------------------------------------------------------------- loader
-def load_vl_model(source: str, dtype=torch.bfloat16, device: str = "cuda:0"):
+@functools.lru_cache(maxsize=16)
+def checkpoint_bytes(source: str) -> int | None:
+    """Tamano del checkpoint en el hub, para estimar si cabe en la VRAM.
+
+    Cacheado: sin esto son ~160 ms de red por consulta, y choose() hace dos.
+    """
+    try:
+        from huggingface_hub import HfApi
+        info = HfApi().model_info(source, files_metadata=True)
+        return sum(f.size or 0 for f in info.siblings
+                   if f.rfilename.endswith(".safetensors"))
+    except Exception:
+        return None
+
+
+def pick_device(source: str, holgura_gib: float = 1.2) -> tuple[str, "torch.dtype"]:
+    """Elige GPU si el checkpoint cabe con holgura; si no, CPU en float32.
+
+    En CPU se usa float32 a proposito: bf16 va emulado salvo en CPUs con
+    avx512_bf16 o amx, y ahi resulta mas lento que fp32.
+
+    La holgura de 1.2 GiB esta calibrada: el 4B tiene un checkpoint de 8.3 GiB
+    y su pico medido con imagenes normales es 8.4. Aun asi la estimacion puede
+    fallar (otra cosa ocupando VRAM, imagenes enormes), asi que load_vl_model
+    reintenta en CPU si la GPU da OOM.
+    """
+    if not torch.cuda.is_available():
+        return "cpu", torch.float32
+    libre = torch.cuda.mem_get_info()[0] / 2**30
+    n = checkpoint_bytes(source)
+    if n is None:
+        return ("cuda:0", torch.bfloat16) if libre >= 6.0 else ("cpu", torch.float32)
+    necesita = n / 2**30 + holgura_gib
+    return ("cuda:0", torch.bfloat16) if libre >= necesita else ("cpu", torch.float32)
+
+
+def choose(device: str | None = None) -> tuple[str, str]:
+    """Elige modelo y dispositivo A LA VEZ, en una sola escalera.
+
+    Decidirlos por separado permite que se contradigan: mirar si cabe el 4B,
+    concluir "CPU", elegir por eso el modelo de CPU, y acabar poniendolo en la
+    GPU porque ese si cabia. Aqui la decision es una.
+
+      1. el 4B en GPU, si cabe        (mejor precision)
+      2. el 2B en GPU, si cabe        (x1.6 mas rapido, menos precision)
+      3. el 2B en CPU                 (~50x mas lento; el 4B en CPU es x2.3
+                                       peor y pide 21.5 GiB de RAM)
+    """
+    if device == "cpu":
+        return DEFAULT_MODEL_CPU, "cpu"
+    for modelo in (DEFAULT_MODEL, DEFAULT_MODEL_CPU):
+        dev, _ = pick_device(modelo)
+        if dev != "cpu":
+            return modelo, (device or dev)
+    # caer a CPU cuesta ~50x: decirlo, no dejar que se note por el reloj
+    libre = torch.cuda.mem_get_info()[0] / 2**30 if torch.cuda.is_available() else 0
+    print(f"[discern] no hay VRAM para el modelo mas pequeno "
+          f"({libre:.1f} GiB libres); usando CPU, ~50x mas lento. "
+          f"Pasa device='cuda:0' para forzar la GPU.", flush=True)
+    return DEFAULT_MODEL_CPU, "cpu"
+
+
+def load_vl_model(source: str, dtype=None, device: str | None = None):
+    if device is None or dtype is None:
+        auto_dev, auto_dt = pick_device(source)
+        device = device or auto_dev
+        dtype = dtype or (torch.float32 if device == "cpu" else auto_dt)
+    if device == "cpu" and torch.get_num_threads() > 8:
+        # CPUs hibridas (P+E): cenirse a los P-cores es ~1.9x mas rapido,
+        # ver scripts/bench_cpu4b.py
+        torch.set_num_threads(min(8, os.cpu_count() or 8))
     t0 = time.time()
     processor = transformers.AutoProcessor.from_pretrained(source)
-    model = transformers.AutoModelForImageTextToText.from_pretrained(
-        source, dtype=dtype, device_map={"": device}, low_cpu_mem_usage=True,
-    )
+    try:
+        model = transformers.AutoModelForImageTextToText.from_pretrained(
+            source, dtype=dtype, device_map={"": device}, low_cpu_mem_usage=True,
+        )
+    except torch.OutOfMemoryError:
+        # la estimacion de pick_device fallo: caer a CPU en vez de reventar
+        if device == "cpu":
+            raise
+        torch.cuda.empty_cache()
+        print(f"[discern] no cabe en la GPU, cargando en CPU (float32). "
+              f"Sera ~50x mas lento; considera un modelo menor.", flush=True)
+        device, dtype = "cpu", torch.float32
+        if torch.get_num_threads() > 8:
+            torch.set_num_threads(min(8, os.cpu_count() or 8))
+        model = transformers.AutoModelForImageTextToText.from_pretrained(
+            source, dtype=dtype, device_map={"": device}, low_cpu_mem_usage=True,
+        )
     model.eval()
     metadata = {
         "source": source,
         "dtype": str(dtype).replace("torch.", ""),
         "device": device,
+        "threads": torch.get_num_threads() if device == "cpu" else None,
         "load_seconds": round(time.time() - t0, 1),
         "torch_version": torch.__version__,
         "transformers_version": transformers.__version__,

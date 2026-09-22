@@ -59,7 +59,10 @@ def main() -> None:
     total = args.limit or len(ds)
 
     sufijo = "circular" if args.circular else "vanilla"
-    out = args.out or os.path.join(_R, "results", f"mmbench_{sufijo}_{total}.jsonl")
+    # el modelo VA en el nombre: sin esto una corrida con otro modelo reanuda
+    # sobre la anterior, ve todos los ids hechos y no mide nada, en silencio
+    slug = args.model.split("/")[-1].replace(".", "").lower()
+    out = args.out or os.path.join(_R, "results", f"mmbench_{slug}_{sufijo}_{total}.jsonl")
     hechos = set()
     if os.path.exists(out):
         with open(out) as fh:

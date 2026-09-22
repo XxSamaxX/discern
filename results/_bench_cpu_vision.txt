@@ -1,0 +1,16 @@
+[cpu] Qwen/Qwen3-VL-2B-Instruct float32...
+[cpu] cargado en 6s | RSS 12.7 GiB
+[cpu] hilos: 8 de 24
+
+  barrido de hilos (3 medidas, mediana):
+      4 hilos      4578 ms/decision
+      8 hilos      2458 ms/decision
+     12 hilos      5513 ms/decision
+     16 hilos      4625 ms/decision
+     24 hilos      5754 ms/decision
+    -> mejor: 8 hilos, 2458 ms
+
+  con imagenes de distinto tamano:
+      448px ->   224 tokens,     1762 ms
+      640px ->   384 tokens,     3264 ms
+     1024px ->   852 tokens,     8911 ms

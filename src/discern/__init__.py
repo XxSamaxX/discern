@@ -36,14 +36,22 @@ DEFAULT_THRESHOLD = 3.0          # nats; ver README, seccion de sesgo posicional
 _MODELO = None                   # (model, processor, meta), perezoso
 
 
-def load(model: str | None = None):
+def load(model: str | None = None, device: str | None = None):
     """Carga el modelo (perezoso y cacheado). Llamalo tu si quieres controlar
-    cuando se paga el coste de carga; si no, la primera llamada lo hace."""
+    cuando se paga el coste de carga; si no, la primera llamada lo hace.
+
+    Sin argumentos elige solo: GPU con el 4B si el checkpoint cabe en la VRAM,
+    CPU con el 2B si no. device="cpu" o "cuda:0" fuerza el dispositivo."""
     global _MODELO
     from . import _readout as semif_vl
-    nombre = model or semif_vl.DEFAULT_MODEL
-    if _MODELO is None or _MODELO[2]["source"] != nombre:
-        _MODELO = semif_vl.load_vl_model(nombre)
+    if model is None:
+        # con un modelo ya cargado y sin peticion explicita, no se vuelve a
+        # decidir: choose() consulta el hub y son ~300 ms por llamada
+        if _MODELO is not None and device is None:
+            return _MODELO
+        model, device = semif_vl.choose(device)
+    if _MODELO is None or _MODELO[2]["source"] != model:
+        _MODELO = semif_vl.load_vl_model(model, device=device)
     return _MODELO
 
 
@@ -107,7 +115,7 @@ def _opciones(options) -> tuple[list[dict], bool]:
 
 
 def discern(image, question: str, options=None, *,
-            evidence: str = "", model: str | None = None,
+            evidence: str = "", model: str | None = None, device: str | None = None,
             threshold: float = DEFAULT_THRESHOLD, rotate: str | bool = "auto") -> Verdict:
     """Pregunta algo sobre una imagen y lee la respuesta de los logits.
 
@@ -115,11 +123,12 @@ def discern(image, question: str, options=None, *,
     question  la pregunta, en texto libre
     options   None -> si/no; lista de cadenas; o dict {etiqueta: descripcion}
     evidence  contexto textual opcional que acompana a la imagen
+    device    None elige solo (GPU si cabe, si no CPU); "cpu" o "cuda:0" fuerza
     threshold nats por debajo de los cuales el veredicto se marca no fiable
     rotate    "auto" (rota solo si el gap queda corto), True (siempre), False
     """
     from . import _readout as semif_vl
-    m, proc, meta = load(model)
+    m, proc, meta = load(model, device)
     ops, binaria = _opciones(options)
     fila = {"id": "q", "image": image, "state": evidence,
             "question": question.strip(), "options": ops}
