@@ -23,7 +23,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = ["discern", "multi", "Verdict", "Uncertain", "load", "unload",
            "DEFAULT_THRESHOLD"]
