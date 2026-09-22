@@ -1,0 +1,29 @@
+Recent open implementations read a decision straight from a language model's
+answer-token logits instead of decoding text, turning the model into a
+runtime-defined conditional - a semantic if. We port this readout unchanged to
+a vision-language model and evaluate it on 13,329 items (MMBench en/dev and
+POPE) with Qwen3-VL-4B and -2B. The 4B reaches 87.4% on MMBench with one
+forward pass per item at 91 ms, and 89.6% on POPE.
+
+Our results concern the confidence signal rather than the score. The
+probability these systems report and the logit gap behind it are not competing
+signals: the probability is a monotone transform of the gap, exactly so on
+binary questions, and both predict correctness equally well (AUC 0.895 against
+0.894). What separates them is representational. Past -ln(2^-25) = 17.33 nats
+the probability is not representable in float32, the dtype most inference
+pipelines carry, and the fraction of decisions crossing that floor grows with
+capability: 62% of MMBench items for the 4B against 26% for the 2B, so a better
+model loses more of its confidence signal to storage. Within the collapsed set
+the gap still separates correct from incorrect at AUC 0.736. Thresholding it at
+16 nats answers 66% of items at 98.4% accuracy against an 87.4% base rate.
+
+Repeating the protocol on the smaller model separates what the readout does
+from what the model does: AUC for correctness (0.896 against 0.894) and for
+order-stability (0.972 against 0.980) replicate, while accuracy, gap magnitude,
+flip rate and collapse fraction all move with the model.
+
+Two negative results survive. Difficulty is not epistemics: on 12 normative
+questions no model can ground, the gap distribution shifts (AUC 0.788, p =
+0.006) but overlaps so heavily that the best threshold still admits 7 of 12.
+And our own 22-item probe reported universal softmax saturation and zero order
+sensitivity; the 4329-item run refuted both.
