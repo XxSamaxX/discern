@@ -134,7 +134,7 @@ def main() -> None:
     ap.add_argument("--cpu-threads", type=int, default=8)
     args = ap.parse_args()
 
-    images = sorted(os.path.join(_HERE, "img", f)
+    images = sorted(os.path.join(_ROOT, "data", "img", f)
                     for f in os.listdir(os.path.join(_ROOT, "data", "img"))
                     if f.endswith((".jpg", ".png")))
 
@@ -162,28 +162,43 @@ def main() -> None:
         q: queue.Queue = queue.Queue(maxsize=2)
         gpu_busy = cpu_busy = 0.0
 
+        fallos: list = []
+
         def producer():
             nonlocal gpu_busy
-            for img in images:
-                t = time.perf_counter()
-                item = gpu_stage(vl_model, vl_proc, vl_meta, img)
-                gpu_busy += time.perf_counter() - t
-                q.put(item)
-            q.put(None)
+            try:
+                for img in images:
+                    t = time.perf_counter()
+                    item = gpu_stage(vl_model, vl_proc, vl_meta, img)
+                    gpu_busy += time.perf_counter() - t
+                    q.put(item)
+            except BaseException as e:          # noqa: BLE001
+                fallos.append(e)
+            finally:
+                q.put(None)                     # el centinela SIEMPRE se pone:
+                                                # sin esto una excepcion aqui deja
+                                                # al consumidor colgado en q.get()
 
         def consumer():
             nonlocal cpu_busy
-            while True:
-                item = q.get()
-                if item is None:
-                    break
-                t = time.perf_counter()
-                results.append(cpu_stage(tx_model, tx_tok, tx_meta, item))
-                cpu_busy += time.perf_counter() - t
+            try:
+                while True:
+                    item = q.get()
+                    if item is None:
+                        break
+                    t = time.perf_counter()
+                    results.append(cpu_stage(tx_model, tx_tok, tx_meta, item))
+                    cpu_busy += time.perf_counter() - t
+            except BaseException as e:          # noqa: BLE001
+                fallos.append(e)
+                while q.get() is not None:      # vaciar para no bloquear al productor
+                    pass
 
         p = threading.Thread(target=producer)
         c = threading.Thread(target=consumer)
         p.start(); c.start(); p.join(); c.join()
+        if fallos:
+            raise fallos[0]
 
     wall = time.perf_counter() - wall
 
